@@ -1,0 +1,86 @@
+﻿@page "/joblist"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@attribute [Authorize]
+@inject HttpClient Http
+@inject NavigationManager navigationManager
+
+<h3>JobList</h3>
+
+<MudTable Items="jobs" Hover="true" Striped="true" Dense="true" Class="mb-2">
+    <HeaderContent>
+        <MudTh>Sr.No</MudTh>
+        <MudTh>Job Title</MudTh>
+        <MudTh>No. Of Post</MudTh>
+        <MudTh>Qualification</MudTh>
+        <MudTh>Experience</MudTh>
+        <MudTh>Type</MudTh>
+        <MudTh>Company</MudTh>
+        <MudTh>State</MudTh>
+        <MudTh>Country</MudTh>
+        <MudTh>Posted On</MudTh>
+        <MudTh>Ends On</MudTh>
+        <MudTh>Status</MudTh>
+        <MudTh>Edit</MudTh>
+        <MudTh>Delete</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Sr.No">@context.SrNo</MudTd>
+        <MudTd DataLabel="JobTitle">@context.Title</MudTd>
+        <MudTd DataLabel="No. Of Post">@context.NoOfPost </MudTd>
+        <MudTd DataLabel="Qualification">@context.Qualification</MudTd>
+        <MudTd DataLabel="Experience">@context.Experience</MudTd>
+        <MudTd DataLabel="Type">@context.JobType</MudTd>
+        <MudTd DataLabel="Company">@context.CompanyName</MudTd>
+        <MudTd DataLabel="State">@context.State</MudTd>
+        <MudTd DataLabel="Country">@context.Country</MudTd>
+        <MudTd DataLabel="Posted On">@context.CreateDate</MudTd>
+        <MudTd DataLabel="Ends On">@context.LastDateToApply</MudTd>
+        <MudTd DataLabel="Status">@context.Status</MudTd>
+        <MudTd DataLabel="Edit">
+            <MudIconButton OnClick="() => EditJob(context.JobId)"
+                           Icon="@Icons.Material.Filled.Edit"
+                           Color="Color.Primary"
+                           Variant="Variant.Filled">
+            </MudIconButton>
+        </MudTd>
+        <MudTd DataLabel="Delete"><MudIconButton OnClick="() => DeleteJob(context.JobId)"
+        Icon="@Icons.Material.Filled.Delete" 
+                Color="Color.Error" 
+                Variant="Variant.Filled">
+            </MudIconButton></MudTd>
+    </RowTemplate>
+</MudTable>
+
+@code {
+    public List<JobPortalMud.Shared.JobList>? jobs = new List<JobPortalMud.Shared.JobList>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var result = await Http.GetFromJsonAsync<List<JobPortalMud.Shared.JobList>>("api/JobList");
+            if (result != null)
+            {
+                jobs = result;
+            }
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+    }
+
+    void EditJob(int id)
+    {
+        navigationManager.NavigateTo($"editjob/{id}");
+    }
+
+    private async Task DeleteJob(int id)
+    {
+        var result = await Http.DeleteAsync($"api/JobList/{id}");   
+        var response = await result.Content.ReadFromJsonAsync<List<JobPortalMud.Shared.JobList>>();
+        jobs = response;
+        navigationManager.NavigateTo("joblist");
+    }
+}

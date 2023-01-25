@@ -1,0 +1,89 @@
+﻿@page "/editjob/{id:int}"
+@using JobPortalMud.Shared;
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@attribute [Authorize]
+@inject IJobService JobService
+@inject HttpClient Http
+
+
+
+<h3>Edit Job</h3>
+
+
+<EditForm Model="job" OnValidSubmit="HandleSubmit">
+    <DataAnnotationsValidator />
+    <MudCard>
+        <MudCardContent>
+            <MudTextField Label="Job Title" @bind-Value="job.Title" For="@(()=>job.Title)"></MudTextField>
+            <MudNumericField Label="No. of Post" @bind-Value="job.NoOfPost" For="@(()=>job.NoOfPost)" HelperText="Minimum Value is 1."></MudNumericField>
+            <MudTextField Label="Job Description" @bind-Value="job.Description" Lines="2" For="@(()=>job.Description)"></MudTextField>
+            <MudTextField Label="Qualification" @bind-Value="job.Qualification" For="@(()=>job.Qualification)"></MudTextField>
+            <MudTextField Label="Experience" @bind-Value="job.Experience" For="@(()=>job.Experience)"></MudTextField>
+            <MudTextField Label="Specialization Required" @bind-Value="job.Specialization" Lines="2" For="@(()=>job.Specialization)"></MudTextField>
+            <MudDatePicker Label="Last Date to Apply" @bind-Date="job.LastDateToApply"/>
+            <MudTextField Label="Salary" @bind-Value="job.Salary" For="@(()=>job.Salary)"></MudTextField>
+            <MudSelect Label="Job Type" @bind-Value="job.JobType">
+                @foreach (var jobtype in jobTypes)
+                {
+                    <MudSelectItem Value="jobtype.JobType">@jobtype.JobType</MudSelectItem>
+                }
+                </MudSelect>
+                <MudTextField Label="Company Name" @bind-Value="job.CompanyName" For="@(()=>job.CompanyName)"></MudTextField>
+            @*<InputFile  id="fileInput" OnChange="OnFileChange" hidden />
+                <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Filled.CloudUpload" for="fileInput">Upload Logo</MudButton>
+                <MudImage Src="@job.CompanyImage" Elevation="25" Class="rounded my-2"></MudImage>*@
+                <MudTextField Label="Website" @bind-Value="job.Website" For="@(()=>job.Website)"></MudTextField>
+                <MudTextField Label="Email" @bind-Value="job.Email" For="@(()=>job.Email)"></MudTextField>
+                <MudTextField Label="Location" @bind-Value="job.Address" For="@(()=>job.Address)"></MudTextField>
+                <MudTextField Label="State" @bind-Value="job.State" For="@(()=>job.State)"></MudTextField>
+                <MudSelect Label="Country" @bind-Value="job.Country">
+                @foreach (var country in countries)
+                {
+                    <MudSelectItem Value="country.Country">@country.Country</MudSelectItem>
+                }
+                </MudSelect>
+        </MudCardContent>
+    </MudCard>
+
+    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="mr-4 mt-4">Update Job</MudButton>
+    
+</EditForm>
+
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+
+    JobPortalMud.Shared.JobList job = new JobPortalMud.Shared.JobList();
+    public List<JobTypes>? jobTypes = new List<JobTypes>();
+    public List<Countries>? countries = new List<Countries>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result1 = await Http.GetFromJsonAsync<List<JobTypes>>("api/JobList/jobtypes");
+        if (result1 != null)
+        {
+            jobTypes = result1;
+        }
+        var result2 = await Http.GetFromJsonAsync<List<Countries>>("api/JobList/countries");
+        if (result2 != null)
+        {
+            countries = result2;
+        }
+    }
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if(Id != null)
+        {
+            job = await JobService.GetSingleJob((int)Id);
+        }
+    }
+
+    async Task HandleSubmit()
+    {
+        await JobService.UpdateJob(job);
+    }
+}

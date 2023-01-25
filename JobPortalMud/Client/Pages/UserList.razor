@@ -1,0 +1,53 @@
+﻿@page "/userlist"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@attribute [Authorize]
+@inject IUserService UserService
+
+
+<h3>User List</h3>
+@if (UserService.users.Count != 0)
+{
+    <MudTable Items="UserService.users" Hover="true" Striped="true" Dense="true" Class="mb-2">
+        <HeaderContent>
+            <MudTh>Sr.No</MudTh>
+            <MudTh>Full Name</MudTh>
+            <MudTh>Email</MudTh>
+            <MudTh>Mobile No.</MudTh>
+            <MudTh>Country</MudTh>
+            <MudTh>Action</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Sr.No">@context.SrNo</MudTd>
+            <MudTd DataLabel="Full Name">@context.Name</MudTd>
+            <MudTd DataLabel="Email">@context.Email </MudTd>
+            <MudTd DataLabel="Mobile No">@context.mobile</MudTd>
+            <MudTd DataLabel="Country">@context.Country</MudTd>
+            <MudTd DataLabel="Action">
+                <MudIconButton OnClick="() => DeleteJob(context.UserName)"
+                           Icon="@Icons.Material.Filled.Delete"
+                           Color="Color.Error"
+                           Variant="Variant.Filled">
+                </MudIconButton>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+}
+else
+{
+    <h5>No Users found...</h5>
+}
+
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        await UserService.GetAllUsers();
+    }
+
+    private async Task DeleteJob(string name)
+    {
+        await UserService.DeleteUser(name);
+    }
+}

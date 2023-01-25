@@ -1,0 +1,32 @@
+﻿@page "/contactus"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@attribute [Authorize]
+@inject IContactService ContactService
+
+<h3>Contact Us</h3>
+
+<EditForm Model="contact" OnValidSubmit="HandleSubmit" class="col-lg-6 mb-5 mb-lg-0">
+    <DataAnnotationsValidator />
+    <MudCard>
+        <MudCardContent>
+            <MudTextField Label="First Name" @bind-Value="contact.FirstName" Class="col-lg-6 mb-5 mb-lg-0" For="@(()=>contact.FirstName)"></MudTextField>
+                <MudTextField Label="Last Name" @bind-Value="contact.LastName" Class="col-lg-6" For="@(()=>contact.LastName)"></MudTextField>
+                <MudTextField Label="Email" @bind-Value="contact.Email" For="@(()=>contact.Email)"></MudTextField>
+                <MudTextField Label="Subject" @bind-Value="contact.Subject" For="@(()=>contact.Subject)"></MudTextField>
+            <MudTextField Label="Message" @bind-Value="contact.Message" Lines="10" For="@(()=>contact.Message)"></MudTextField>
+        </MudCardContent>
+    </MudCard>
+
+    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="mr-4 mt-4">Submit</MudButton>
+
+</EditForm>
+
+@code {
+    JobPortalMud.Shared.Contact contact = new JobPortalMud.Shared.Contact();
+
+    async Task HandleSubmit()
+    {
+        await ContactService.CreateContact(contact);
+    }
+}

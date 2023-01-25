@@ -1,0 +1,53 @@
+﻿@page "/contactlist"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@attribute [Authorize]
+@inject IContactService ContactService
+
+
+<h3>Contact List</h3>
+@if (ContactService.contacts.Count != 0)
+{
+    <MudTable Items="ContactService.contacts" Hover="true" Striped="true" Dense="true" Class="mb-2">
+        <HeaderContent>
+            <MudTh>Sr.No</MudTh>
+            <MudTh>First Name</MudTh>
+            <MudTh>Last Name</MudTh>
+            <MudTh>Email</MudTh>
+            <MudTh>Subject</MudTh>
+            <MudTh>Action</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Sr.No">@context.SrNo</MudTd>
+            <MudTd DataLabel="First Name">@context.FirstName</MudTd>
+            <MudTd DataLabel="Last Name">@context.LastName </MudTd>
+            <MudTd DataLabel="Email">@context.Email</MudTd>
+            <MudTd DataLabel="Subject">@context.Subject</MudTd>
+            <MudTd DataLabel="Action">
+                <MudIconButton OnClick="() => DeleteJob(context.Id)"
+                           Icon="@Icons.Material.Filled.Delete"
+                           Color="Color.Error"
+                           Variant="Variant.Filled">
+                </MudIconButton>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+}
+else
+{
+    <h5>No contacts found...</h5>
+}
+
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ContactService.GetAllContacts();
+    }
+
+    private async Task DeleteJob(int id)
+    {
+        await ContactService.DeleteContact(id); 
+    }
+}
