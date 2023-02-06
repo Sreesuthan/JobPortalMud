@@ -17,15 +17,15 @@ namespace JobPortalMud.Client.Services.JobService
         }
 		public List<JobList> jobs { get; set; } = new List<JobList>();
 
-        public async Task CreateJob(JobList job)
+        public async Task CreateJob(JobList job, string user)
         {
 			var result = await _http.PostAsJsonAsync("api/JobList", job);
             var response = await result.Content.ReadFromJsonAsync<List<JobList>>();
 			jobs = response;
-            _navigationManager.NavigateTo("joblist");
+            _navigationManager.NavigateTo($"postjob/{user}");
         }
 
-        public async Task<JobList> GetSingleJob(int id)
+		public async Task<JobList> GetSingleJob(int id)
 		{
 			var result = await _http.GetFromJsonAsync<JobList>($"api/JobList/{id}");
 			if (result != null)
@@ -38,12 +38,12 @@ namespace JobPortalMud.Client.Services.JobService
 			}
 		}
 
-        public async Task UpdateJob(JobList job)
+        public async Task UpdateJob(JobList job, string user)
         {
             var result = await _http.PutAsJsonAsync("api/JobList", job);
             var response = await result.Content.ReadFromJsonAsync<List<JobList>>();
             jobs = response;
-            _navigationManager.NavigateTo("joblist");
+            _navigationManager.NavigateTo($"joblist/{user}");
         }
     }
 }

@@ -1,0 +1,159 @@
+﻿@page "/favorites/{UserName}"
+@inject IBookmarkedJobService BookmarkedJobService
+@inject IAppliedJobService AppliedJobService
+@inject HttpClient Http 
+@inject IJSRuntime JS
+@inject NavigationManager navigationManager
+@inject MudBlazor.ISnackbar snackBar
+
+<MudGrid Style="background-image: url('Images/apply.jpg');" Class="rounded-lg">
+    <MudItem xs="7">
+        <MudText Typo="Typo.h4" Align="Align.Start" GutterBottom="true"><b>Favourites</b></MudText>
+        <a href="/">Home</a> <span class="mx-2 slash">/</span>
+        <span class="text-black"><b>Favourites</b></span>
+    </MudItem>
+</MudGrid>
+<br />
+<MudGrid Class="mt-8" Justify="Justify.Center">
+        <MudItem xs="12">
+        @if (BookmarkedJobService.BookmaredJobs.Count > 0)
+            {
+            @foreach (var job in BookmarkedJobService.BookmaredJobs)
+                {
+                     <MudGrid>
+                         <MudItem xs="2" Class="text-center" Style="background-color:lightgray">
+                         @{
+                            if (job.CompanyImage.Length > 0)
+                            {
+                                Image = job.CompanyImage;
+                            }
+                            else
+                            {
+                                Image = @"Images\company.png";
+                            }
+                         }
+                             <MudImage Src="@Image" Width="100" Height="100" Alt="Image" Elevation="25" Class="rounded-lg ma-4" />
+                         </MudItem>
+                         <MudItem xs="6" Style="background-color:lightgray">
+                             <MudText Typo="Typo.h5" Style="margin:15px"><b>@job.Title</b></MudText>
+                             <MudText Typo="Typo.subtitle1"><MudIcon Icon="@Icons.Material.Filled.Monitor" Size="Size.Small" />&nbsp;@job.CompanyName&nbsp;&nbsp;&nbsp;<MudIcon Icon="@Icons.Material.Filled.LocationOn" Size="Size.Small" />&nbsp;@job.Address, @job.State, @job.Country&nbsp;&nbsp;&nbsp;<MudIcon Icon="@Icons.Material.Filled.Timer" Size="Size.Small" />&nbsp;@job.JobType</MudText>
+                         </MudItem>
+                                 <MudItem xs="2" Class="text-center" Style="background-color:lightgray">
+                                     <br />
+                        <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="() => ApplyJob(job.JobId, job.Id, UserName)" Class="mr-4 mt-4">@(appliedJobs.Count > 0 ? "Applied" : "Apply Now")</MudButton>
+                                 </MudItem>
+                         <MudItem xs="2" Class="text-center" Style="background-color:lightgray">
+                             <br />
+                        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="() => DeleteBookmark(job.Id, UserName)" Class="mr-4 mt-4" Style="align:center"><MudIcon Icon="@Icons.Material.Outlined.Delete" />&nbsp;Remove</MudButton>
+                         </MudItem>
+                     </MudGrid>
+            }
+            <div class="d-flex flex-column align-center">
+                <MudPagination Color="Color.Info" BoundaryCount="1" MiddleCount="2" Class="mt-5 align-end" SelectedChanged="PageChanged" Count="BookmarkedJobService.Paging.TotalPages" />
+            </div>
+            }
+            else
+            {
+                <MudText Typo="Typo.h5" Align="Align.Start" GutterBottom="true">No Jobs found...</MudText>
+            }
+        </MudItem>
+</MudGrid>
+
+
+@code {
+    [Parameter]
+    public string? UserName { get; set; }
+
+    BookMark BookMarkedJob = new BookMark();
+    public List<BookMark> BookmaredJobs = new List<BookMark>();
+
+    AppliedJob appliedJob = new AppliedJob();
+    public List<AppliedJob> appliedJobs = new List<AppliedJob>();
+
+    User Singleuser = new User();
+
+    public string? Image { get; set; }
+
+    private int currentPage { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await PageChanged(currentPage);
+    }
+
+    private async Task PageChanged(int i)
+    {
+        currentPage = i;
+        await BookmarkedJobService.GetAllBookMarkedJobs(UserName, currentPage);
+    }
+
+    async Task ApplyJob(int id, int delId, string user)
+    {
+        if (await IsUploaded())
+        {
+            if (!await IsApplied(id))
+            {
+                await BookmarkedJobService.DeleteBookMarkedJob(delId, user);
+                appliedJob.UserName = user;
+                appliedJob.JobId = id;
+                await AppliedJobService.CreateAppliedJobBook(appliedJob);
+                snackBar.Add("Job Applied Successfully", Severity.Success);
+            }
+            else
+            {
+                snackBar.Add("You have already applied this job", Severity.Warning);
+            }
+        }
+        else
+        {
+            navigationManager.NavigateTo($"editprofile/{user}");
+        }
+    }
+    async Task<bool> IsApplied(int id)
+    {
+        var result = await Http.GetFromJsonAsync<List<AppliedJob>>($"api/AppliedJob/apply/{id}/{UserName}");
+        if (result != null)
+        {
+            appliedJobs = result;
+        }
+        if (appliedJobs.Count > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    async Task<bool> IsUploaded()
+    {
+        var result = await Http.GetFromJsonAsync<User>($"api/User/{UserName}");
+        if (result != null)
+        {
+            Singleuser = result;
+        }
+        if (Singleuser.Resume.Length > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private async Task DeleteBookmark(int id, string user)
+    {
+        if (!await JS.InvokeAsync<bool>("confirm", "Are you sure you want to remove job from favourites?"))
+        {
+            return;
+        }
+        else
+        {
+            await BookmarkedJobService.DeleteBookMarkedJob(id, user);
+            snackBar.Add("Job Removed Successfully", Severity.Success);
+        }
+    }
+}

@@ -1,9 +1,167 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.Authorization;
+@inject HttpClient Http
+@inject AuthenticationStateProvider Auth
 
-<PageTitle>Index</PageTitle>
+<MudText Typo="Typo.h3" Align="Align.Center"><b>The Easiest Way To Get Your Dream Job.</b></MudText>
+<br/>
+<MudText Typo="Typo.h5" Style="color:dimgrey" Align="Align.Center"><b>The networking app for the entertainment industry.</b></MudText>
+<br />
+<br />
+<MudGrid  Class="rounded-lg">
+        <MudImage Src="Images/job1.jpg" Width="1500" Height="500" Alt="Image" Class="rounded-lg ma-4 img-" />
+</MudGrid>
+<br />
+@if (user.Length > 0)
+{
+<br />
+<MudGrid Class="rounded-lg" Style="background-color:darkgrey">
+    <MudItem xs="4" Class="text-center">
+        <MudIconButton Icon="@Icons.Material.Filled.Computer" Color="Color.Info" Size="Size.Large"></MudIconButton>
+        <MudText Typo="Typo.h3" Align="Align.Center"><b>@jobs.Count</b></MudText>
+        <MudText Typo="Typo.h6" Align="Align.Center">Total Jobs</MudText>
+    </MudItem>
+    <MudItem xs="4" Class="text-center">
+        <MudIconButton Icon="@Icons.Material.Filled.Star" Color="Color.Info" Size="Size.Large"></MudIconButton>
+        <MudText Typo="Typo.h3" Align="Align.Center"><b>@activeJobs.Count</b></MudText>
+        <MudText Typo="Typo.h6" Align="Align.Center">Active Jobs</MudText>
+    </MudItem>
+    <MudItem xs="4" Class="text-center">
+        <MudIconButton Icon="@Icons.Material.Filled.People" Color="Color.Info" Size="Size.Large"></MudIconButton>
+        <MudText Typo="Typo.h3" Align="Align.Center"><b>@users.Count</b></MudText>
+        <MudText Typo="Typo.h6" Align="Align.Center">Total Users</MudText>
+    </MudItem>
+</MudGrid>
+<br />
+<hr>    
+}
+<br />
+<MudGrid Class="rounded-lg">
+    <MudItem xs="12">
+        <MudText Typo="Typo.h4" Align="Align.Start"><b>Simple, yet powerful features</b></MudText>
+    </MudItem>
+    <br/>
+    <MudItem xs="4">
+        <MudIconButton Icon="@Icons.Material.Filled.People" Size="Size.Large"></MudIconButton>
+        <MudText Typo="Typo.h5" Align="Align.Start"><b>Free Profile</b></MudText>
+        <MudText Typo="Typo.h6" Align="Align.Start" Style="color:dimgrey">Get started for free. Join the industry immediately and easily create a profile to get discovered.</MudText>
+    </MudItem>
+    <MudItem xs="4">
+        <MudIconButton Icon="@Icons.Material.Filled.List" Size="Size.Large"></MudIconButton>
+        <MudText Typo="Typo.h5" Align="Align.Start"><b>Performant</b></MudText>
+        <MudText Typo="Typo.h6" Align="Align.Start" Style="color:dimgrey">Find thousands of jobs from around the world. Whether you're looking for. And get job opportunities in the entertainment industry.</MudText>
+    </MudItem>
+    <MudItem xs="4">
+        <MudIconButton Icon="@Icons.Material.Filled.NotificationsActive" Size="Size.Large"></MudIconButton>
+        <MudText Typo="Typo.h5" Align="Align.Start"><b>Job Alerts</b></MudText>
+        <MudText Typo="Typo.h6" Align="Align.Start" Style="color:dimgrey">Get notified for new calls, interviews and jobs as soon as they become available. </MudText>
+    </MudItem>
+    <br />
+</MudGrid>
+<br />
+<hr>
+<br />
+<MudGrid Class="rounded-lg">
+    <MudItem xs="12">
+        <br />
+        <MudText Typo="Typo.h4" Align="Align.Center"><b>All-in-one networking tool</b></MudText>
+        <br />
+        <MudText Typo="Typo.h6" Align="Align.Center" Style="color:dimgrey">Join over 5,000 professionals finding jobs in the industry.</MudText>
+    </MudItem>
+    <MudItem xs="7" Class="text-center">
+        <MudImage Src="images/job2.jpg" Width="600" Height="400" Alt="Image" Class="rounded-lg ma-4 " />
+    </MudItem>
+    <MudItem xs="5" Class="text-center">
+        <br />
+        <br />
+        <br />
+        <MudText Typo="Typo.h5" Align="Align.Start"><b>Search for the latest jobs</b></MudText>
+        <br />
+        <MudText Typo="Typo.h6" Align="Align.Start" Style="color:dimgrey">Entertainment Careers.Net features thousands of jobs from around the world. Whether you're looking for. You can find it here.</MudText>
+        <MudList>
+            <MudListItem>
+                · Get access to thousands of jobs
+        </MudListItem>
+        <MudListItem>
+                · Get calls, Interviews, and Professional jobs
+        </MudListItem>
+        <MudListItem>
+                · Join the industry with dozens of opportunities added daily
+        </MudListItem>
+        </MudList>
+    </MudItem>
+    <MudItem xs="5" Class="text-center">
+        <br />
+        <br />
+        <br />
+        <MudText Typo="Typo.h5" Align="Align.Start"><b>Employer can easily hire you</b></MudText>
+        <br />
+        <MudText Typo="Typo.h6" Align="Align.Start" Style="color:dimgrey">Entertainment Careers.Net provides separate panel for Employers. So they can easily hire you.</MudText>
+        <MudList>
+            <MudListItem>
+                · Get access to update profile and resume
+            </MudListItem>
+            <MudListItem>
+                · Get notification from the epmloyer who you are applied
+            </MudListItem>
+            <MudListItem>
+                · Build your career with us
+            </MudListItem>
+        </MudList>
+    </MudItem>
+    <MudItem xs="7" Class="text-center">
+        <MudImage Src="images/job3.jpg" Width="600" Height="400" Alt="Image" Class="rounded-lg ma-4 img-" />
+    </MudItem>
+</MudGrid>
+<br />
+<hr>
+<br />
+@if (user.Length == 0)
+{
+    <MudGrid Justify="Justify.Center" Class="rounded-lg" >
+        <MudItem xs="10" Class="text-center rounded-3" Style="background-color:darkgrey">
+            <br />
+            <MudText Typo="Typo.h3"><b>Looking For A Job?</b></MudText>
+            <MudText Typo="Typo.h3"><b>Sign Up Now</b></MudText>
+            <br />
+            <MudButton Href="Identity/Account/Register" Variant="Variant.Filled" Color="Color.Info" Class="mr-4 mt-4" Size="Size.Large">Get Stared</MudButton>
+            <br />
+        </MudItem>
+    </MudGrid>
+    <br />
+    <hr>
+    <br />
+}
+<MudGrid Class="rounded-lg">
+    <MudItem xs="12">
+        <MudText Typo="Typo.h4" Align="Align.Center"><b>We focus exclusively on entertainments from companies like...</b></MudText>
+        <br />
+    </MudItem>
+    <MudItem xs="3" Class="text-center">
+        <MudImage Src="images/logo_mailchimp.svg" Width="100" Height="100" Alt="Image" Class="img-fluid logo-1" />
+    </MudItem>
+    <MudItem xs="3" Class="text-center">
+        <MudImage Src="images/logo_paypal.svg" Width="100" Height="100" Alt="Image" Class="img-fluid logo-2" />
+    </MudItem>
+    <MudItem xs="3" Class="text-center">
+        <MudImage Src="images/logo_stripe.svg" Width="100" Height="100" Alt="Image" Class="img-fluid logo-3" />
+    </MudItem>
+    <MudItem xs="3" Class="text-center">
+        <MudImage Src="images/logo_visa.svg" Width="100" Height="100" Alt="Image" Class="img-fluid logo-4" />
+    </MudItem>
 
-<h1>Hello, world!</h1>
+    <MudItem xs="3" Class="text-center">
+        <MudImage Src="images/logo_apple.svg" Width="100" Height="100" Alt="Image" Class="img-fluid logo-5" />
+    </MudItem>
+    <MudItem xs="3" Class="text-center">
+        <MudImage Src="images/logo_tinder.svg" Width="100" Height="100" Alt="Image" Class="img-fluid logo-6" />
+    </MudItem>
+    <MudItem xs="3" Class="text-center">
+        <MudImage Src="images/logo_sony.svg" Width="100" Height="100" Alt="Image" Class="img-fluid logo-7" />
+    </MudItem>
+    <MudItem xs="3" Class="text-center">
+        <MudImage Src="images/logo_airbnb.svg" Width="100" Height="100" Alt="Image" Class="img-fluid logo-8" />
+    </MudItem>
+</MudGrid>
 
-Welcome to your new app.
 
-<SurveyPrompt Title="How is Blazor working for you?" />

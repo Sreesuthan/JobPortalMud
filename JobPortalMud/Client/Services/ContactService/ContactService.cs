@@ -39,6 +39,20 @@ namespace JobPortalMud.Client.Services.ContactService
             var result = await _http.PostAsJsonAsync("api/Contact", contact);
             var response = await result.Content.ReadFromJsonAsync<List<Contact>>();
             contacts = response;
+            _navigationManager.NavigateTo("contact");
+        }
+
+        public async Task<Contact> GetSingleContact(int id)
+        {
+            var result = await _http.GetFromJsonAsync<Contact>($"api/Contact/{id}");
+            if (result != null)
+            {
+                return result;
+            }
+            else
+            {
+                throw new Exception("contact not found");
+            }
         }
     }
 }

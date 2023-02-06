@@ -6,6 +6,7 @@ namespace JobPortalMud.Client.Services.ContactService
     {
         List<Contact> contacts { get; set; }
         Task GetAllContacts();
+        Task<Contact> GetSingleContact(int id);
         Task DeleteContact(int id);
         Task CreateContact(Contact contact);
     }

@@ -1,0 +1,62 @@
+﻿@page "/viewcontact/{id:int}"
+@inject IContactService ContactService
+
+<MudGrid Style="background-image: url('Images/apply.jpg');" Class="rounded-lg">
+    <MudItem xs="7">
+        <MudText Typo="Typo.h4" Align="Align.Start" GutterBottom="true"><b>Contact Details</b></MudText>
+        <a href="/">Home</a> <span class="mx-2 slash">/</span>
+        <span class="text-black"><b>@contact.FirstName</b></span>
+    </MudItem>
+</MudGrid>
+<br />
+<MudGrid Justify="Justify.FlexStart" Class="mt-8 mb-10">
+    <MudItem xs="10">
+        <MudPaper>
+            <MudText Typo="Typo.h5" Style="margin:15px"><b>Details</b></MudText>
+            <MudSimpleTable Striped="true" Bordered="true" Outlined="true" Dense="false" Hover="true" Class="card-body pt-0">
+                <tr>
+                    <th width="30%">First Name</th>
+                    <td width="2%">:</td>
+                    <td>@contact.FirstName</td>
+                </tr>
+                <tr>
+                    <th width="30%">Last Name</th>
+                    <td width="2%">:</td>
+                    <td>@contact.LastName</td>
+                </tr>
+                <tr>
+                    <th width="30%">Email</th>
+                    <td width="2%">:</td>
+                    <td>@contact.Email</td>
+                </tr>
+                <tr>
+                    <th width="30%">Subject</th>
+                    <td width="2%">:</td>
+                    <td>@contact.Subject</td>
+                </tr>
+            </MudSimpleTable>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+<MudGrid Justify="Justify.FlexStart">
+        <MudItem xs="6">
+            <MudPaper>
+            <MudText Typo="Typo.h5" Style="margin:15px"><b>Message</b></MudText>
+            <MudText Typo="Typo.body1" Style="margin:15px">@contact.Message</MudText>
+            </MudPaper>
+        </MudItem>
+</MudGrid>
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+
+    JobPortalMud.Shared.Contact contact = new JobPortalMud.Shared.Contact();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id != null)
+        {
+            contact = await ContactService.GetSingleContact((int)Id);
+        }
+    }
+}

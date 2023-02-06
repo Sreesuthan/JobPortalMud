@@ -1,0 +1,156 @@
+﻿@page "/findjob/{id:int}/{user}"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using System.ComponentModel.DataAnnotations;
+@attribute [Authorize]
+@inject HttpClient Http 
+@inject NavigationManager navigationManager
+
+<MudGrid Style="background-image: url('Images/apply.jpg');" Class="rounded-lg">
+    <MudItem xs="7">
+        <MudText Typo="Typo.h4" Align="Align.Start" GutterBottom="true"><b>Find Jobs In All Location</b></MudText>
+        <a href="/">Home</a> <span class="mx-2 slash">/</span>
+        <a href="/category/@user">Job Category</a> <span class="mx-2 slash">/</span>
+        <span class="text-black"><b>Find job</b></span>
+    </MudItem>
+</MudGrid>
+<br />
+<MudGrid Spacing="2" Class="mt-8 mb-10" Justify="Justify.Center">
+    <EditForm Model="search" OnValidSubmit="HandleSubmit">
+    <MudItem xs="5">
+        <MudTextField @bind-Value="search.SearchTitle" Label="What" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" HelperText="Enter Job Title" Required="true" RequiredError="Job Title is required!" Class="mt-8" />
+    </MudItem>
+    <MudItem xs="5">
+        <MudTextField @bind-Value="search.SearchCountry" Label="Where" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.LocationOn" HelperText="Enter Country" Required="true" RequiredError="Country is required!" Class="mt-8" />
+    </MudItem>
+    <MudItem xs="2">
+        <MudButton ButtonType="ButtonType.Submit" Size="Size.Large" Color="Color.Info" Variant="Variant.Filled" Class="mt-9">Find Job</MudButton>
+    </MudItem>
+    </EditForm>
+</MudGrid>
+<MudGrid Class="mt-8" Justify="Justify.Center">
+        <MudItem xs="10">
+            @if(jobs.Count>0)
+            {
+                @foreach(var job in jobs)
+                {
+                     <MudGrid>
+                         <MudItem xs="2" Class="text-center" Style="background-color:lightgray">
+                         @{
+                            if (job.CompanyImage.Length > 0)
+                            {
+                                Image = job.CompanyImage;
+                            }
+                            else
+                            {
+                                Image = @"Images\company.png";
+                            }
+                         }
+                             <MudImage Src="@Image" Width="100" Height="100" Alt="Image" Elevation="25" Class="rounded-lg ma-4" />
+                         </MudItem>
+                         <MudItem xs="6" Style="background-color:lightgray">
+                        @{
+                            if (job.DateDiffMin < 7200)
+                            {
+                                isNew = true;
+                            }
+                            else
+                            {
+                                isNew = false;
+                            }
+                        }
+                        <MudText Typo="Typo.h5" Style="margin:15px"><b>@job.Title</b>&nbsp;
+                            @if (isNew)
+                            {
+                                <span style="font-size: 11px;" class="text-danger border border-danger rounded-1">New</span>
+                            }
+                        </MudText>
+                             <MudText Typo="Typo.subtitle1"><MudIcon Icon="@Icons.Material.Filled.Monitor" Size="Size.Small" />&nbsp;@job.CompanyName&nbsp;&nbsp;&nbsp;<MudIcon Icon="@Icons.Material.Filled.LocationOn" Size="Size.Small" />&nbsp;@job.Address, @job.State, @job.Country&nbsp;&nbsp;&nbsp;<MudIcon Icon="@Icons.Material.Filled.Timer" Size="Size.Small" />&nbsp;@job.JobType</MudText>
+                         </MudItem>
+                         <MudItem xs="4" Class="text-center" Style="background-color:lightgray">
+                             <br />
+                             <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="() => ViewJob(job.JobId, user)"
+                                    Icon="@Icons.Material.Filled.Approval" Class="mr-4 mt-4" Style="align:center">View Job</MudButton>
+                         </MudItem>
+                     </MudGrid>
+            }
+            <div class="d-flex flex-column align-center">
+                <MudPagination Color="Color.Info" BoundaryCount="1" MiddleCount="2" Class="mt-5 align-end" SelectedChanged="PageChanged" Count="Paging.TotalPages" />
+            </div>
+            }
+            else
+            {
+                <MudText Typo="Typo.h5" Align="Align.Start" GutterBottom="true">No Jobs found...</MudText>
+            }
+        </MudItem>
+</MudGrid>
+
+
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+
+    [Parameter]
+    public string? user { get; set; }
+
+    Paging search = new Paging();
+    private int currentPage { get; set; }
+    public string Image = "";
+    public bool isNew = false;
+
+    public List<JobPortalMud.Shared.JobList> jobs { get; set; } = new List<JobPortalMud.Shared.JobList>();
+    public Paging Paging = new Paging();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await PageChanged(currentPage);
+    }
+
+    private async Task PageChanged(int i)
+    {
+        if (Id != null)
+        {
+            currentPage = i;
+            var result = await Http.GetFromJsonAsync<List<JobPortalMud.Shared.JobList>>($"api/JobList/search/{Id}");
+            if (result != null)
+            {
+                var list = result;
+                int pageSize = 5;
+                int count = list.Count;
+                int TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+                list = list.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+                Paging.PageSize = pageSize;
+                Paging.CurrentPage = currentPage;
+                Paging.TotalPages = TotalPages;
+                jobs = list;
+            }
+        }
+    }
+
+    async Task HandleSubmit()
+    {
+        await SearchJob(search.SearchTitle, search.SearchCountry);
+    }
+
+    async Task SearchJob(string title, string country)
+    {
+        var result = await Http.GetFromJsonAsync<List<JobPortalMud.Shared.JobList>>($"api/JobList/find/{Id}/{title}/{country}");
+        if (result != null)
+        {
+            var list = result;
+            int pageSize = 5;
+            int count = list.Count;
+            int TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+            list = list.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+            Paging.PageSize = pageSize;
+            Paging.CurrentPage = currentPage;
+            Paging.TotalPages = TotalPages;
+            jobs = list;
+        }
+    }
+
+    void ViewJob(int id, string user)
+    {
+        navigationManager.NavigateTo($"viewjob/{id}/{user}");
+    }
+}

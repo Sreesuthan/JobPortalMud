@@ -32,5 +32,26 @@ namespace JobPortalMud.Client.Services.UserService
                 users = result;
             }
         }
+
+        public async Task<User> GetSingleUser(string username)
+        {
+            var result = await _http.GetFromJsonAsync<User>($"api/User/{username}");
+            if (result != null)
+            {
+                return result;
+            }
+            else
+            {
+                throw new Exception("user not found");
+            }
+        }
+
+        public async Task UpdateUser(User user, string username)
+        {
+            var result = await _http.PutAsJsonAsync("api/User", user);
+            var response = await result.Content.ReadFromJsonAsync<List<User>>();
+            users = response;
+            _navigationManager.NavigateTo($"profile/{username}");
+        }
     }
 }

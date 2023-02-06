@@ -1,0 +1,97 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<div class="container col-lg-6 mb-5">
+    <div class="row justify-content-center border rounded-3">
+        <div class="mb-3">
+            <h4 class="text-center mb-4 m-lg-3">Welcome to Entertainment Careers.Net</h4>
+            @if (TempData["Message"] != null)
+            {
+                <div class="col-12 pb-20">
+                    <div class="alert alert-warning">
+                        @TempData["Message"]
+                        <p>Resend Email Confirmation? <a style="text-decoration: none" href="./ResendEmailConfirmation">Click here.</a></p>
+                    </div>
+                </div>
+            }
+            <form method="post">
+            @if (TempData["AlertMessage"] != null)
+            {
+                <div class="col-12 pb-20">
+                    <div class="alert alert-danger">
+                        @TempData["AlertMessage"]
+                    </div>
+                </div>
+            }
+            <div asp-validation-summary="All" class="text-danger">
+            </div>
+            <div class="form-floating mb-3 col-lg-11 m-lg-3 ">
+                <input type="text" id="username" class="form-control" asp-for="Model.UserName" placeholder="User Name">
+                <label for="username" asp-for="Model.UserName">User Name</label>
+            </div>
+            <div class="form-floating mb-3 col-lg-11 m-lg-3">
+                <input type="password" id="password" class="form-control" asp-for="Model.Password" placeholder="Password">
+                <label for="password" asp-for="Model.Password">Password</label>
+                    <a href="./ForgotPassword" style="text-decoration: none; float:right;">Forgot Password?</a>
+            </div>
+
+            <div class="checkbox mb-4 col-lg-11 m-lg-3">
+                    <input type="checkbox" asp-for="Model.RememberMe" class="form-check-input" />
+                    <label class="text-black" asp-for="Model.RememberMe">Remember Me?</label>
+            </div>
+
+            <div class="form-floating mb-1 d-grid m-lg-3">
+                <input type="submit" asp-page-handler="Login" value="LOGIN" class="btn px-4 btn-primary text-white">
+            </div>
+            </form>
+                @{
+                    if (Model.ExternalLogins.Count != 0)
+                    {
+                    <form method="post">
+                         <div class="form-floating mb-3 d-grid m-lg-3">
+                             @foreach (var provider in Model.ExternalLogins)
+                             {
+                                 <button type="submit" class="btn px-4 btn-outline-primary" asp-page-handler="ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">SIGN IN WITH @provider.DisplayName.ToUpper() </button>
+                             }
+                        </div>
+                    </form>
+                    }
+                }
+            <hr>
+            <h6 class="text-center">Not a member yet? <a style="text-decoration: none" href="./Register">Sign Up!</a></h6>
+    </div>
+    @*<div class="col-lg-6">
+            <h2 class="mb-4 m-lg-3">External Login</h2>
+        @{
+            if (Model.ExternalLogins.Count == 0)
+            {
+                <div>
+                    <p>No External Logins Configured.</p>
+                </div>
+            }
+            else
+            {
+                <form method="post" class="p-4 border rounded">
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            @foreach (var provider in Model.ExternalLogins)
+                            {
+                                <button type="submit" class="btn btn-primary" asp-page-handler="ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account"> @provider.DisplayName </button>
+                            }
+                        </div>
+                    </div>
+
+                </form>
+            }
+        }
+    </div>*@
+</div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,26 +1,41 @@
-﻿@page "/editjob/{id:int}"
+﻿@page "/editjob/{id:int}/{user}"
 @using JobPortalMud.Shared;
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using System.Net.Http.Headers;
 @attribute [Authorize]
 @inject IJobService JobService
 @inject HttpClient Http
+@inject MudBlazor.ISnackbar snackBar
 
 
 
-<h3>Edit Job</h3>
-
+<MudGrid Style="background-image: url('Images/apply.jpg');" Class="rounded-lg">
+    <MudItem xs="7">
+        <MudText Typo="Typo.h4" Align="Align.Start" GutterBottom="true"><b>Edit Job</b></MudText>
+        <a href="/">Home</a> <span class="mx-2 slash">/</span>
+        <a href="/joblist/@user">Job List</a> <span class="mx-2 slash">/</span>
+        <span class="text-black"><b>@job.Title</b></span>
+    </MudItem>
+</MudGrid>
+<br />
 
 <EditForm Model="job" OnValidSubmit="HandleSubmit">
     <DataAnnotationsValidator />
-    <MudCard>
+    <MudCard Class="mt-8 mb-10">
         <MudCardContent>
+            <MudSwitch Label="Active" @bind-Checked="job.Active" Color="Color.Primary"></MudSwitch>
             <MudTextField Label="Job Title" @bind-Value="job.Title" For="@(()=>job.Title)"></MudTextField>
-            <MudNumericField Label="No. of Post" @bind-Value="job.NoOfPost" For="@(()=>job.NoOfPost)" HelperText="Minimum Value is 1."></MudNumericField>
-            <MudTextField Label="Job Description" @bind-Value="job.Description" Lines="2" For="@(()=>job.Description)"></MudTextField>
-            <MudTextField Label="Qualification" @bind-Value="job.Qualification" For="@(()=>job.Qualification)"></MudTextField>
+            <MudNumericField Label="No. of Post" @bind-Value="job.NoOfPost" For="@(()=>job.NoOfPost)"></MudNumericField>
+            <MudTextField Label="Job Description" @bind-Value="job.Description" Lines="4" For="@(()=>job.Description)"></MudTextField>
+            <MudSelect Label="Job Category" @bind-Value="job.CategoryId">
+                @foreach (var category in categories)
+                {
+                    <MudSelectItem Value="category.Id">@category.Category</MudSelectItem>
+                }
+            </MudSelect>
             <MudTextField Label="Experience" @bind-Value="job.Experience" For="@(()=>job.Experience)"></MudTextField>
-            <MudTextField Label="Specialization Required" @bind-Value="job.Specialization" Lines="2" For="@(()=>job.Specialization)"></MudTextField>
+            <MudTextField Label="Specialization Required" @bind-Value="job.Specialization" Lines="4" For="@(()=>job.Specialization)"></MudTextField>
             <MudDatePicker Label="Last Date to Apply" @bind-Date="job.LastDateToApply"/>
             <MudTextField Label="Salary" @bind-Value="job.Salary" For="@(()=>job.Salary)"></MudTextField>
             <MudSelect Label="Job Type" @bind-Value="job.JobType">
@@ -28,35 +43,41 @@
                 {
                     <MudSelectItem Value="jobtype.JobType">@jobtype.JobType</MudSelectItem>
                 }
-                </MudSelect>
-                <MudTextField Label="Company Name" @bind-Value="job.CompanyName" For="@(()=>job.CompanyName)"></MudTextField>
-            @*<InputFile  id="fileInput" OnChange="OnFileChange" hidden />
-                <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Filled.CloudUpload" for="fileInput">Upload Logo</MudButton>
-                <MudImage Src="@job.CompanyImage" Elevation="25" Class="rounded my-2"></MudImage>*@
-                <MudTextField Label="Website" @bind-Value="job.Website" For="@(()=>job.Website)"></MudTextField>
-                <MudTextField Label="Email" @bind-Value="job.Email" For="@(()=>job.Email)"></MudTextField>
-                <MudTextField Label="Location" @bind-Value="job.Address" For="@(()=>job.Address)"></MudTextField>
-                <MudTextField Label="State" @bind-Value="job.State" For="@(()=>job.State)"></MudTextField>
-                <MudSelect Label="Country" @bind-Value="job.Country">
-                @foreach (var country in countries)
-                {
-                    <MudSelectItem Value="country.Country">@country.Country</MudSelectItem>
-                }
-                </MudSelect>
+            </MudSelect>
+            <MudTextField Label="Company Name" @bind-Value="job.CompanyName" For="@(()=>job.CompanyName)"></MudTextField>
+            <MudTextField Label="Website" @bind-Value="job.Website" For="@(()=>job.Website)"></MudTextField>
+            <MudTextField Label="Email" @bind-Value="job.Email" For="@(()=>job.Email)"></MudTextField>
+            <MudTextField Label="Location" @bind-Value="job.Address" For="@(()=>job.Address)"></MudTextField>
+            <MudTextField Label="State" @bind-Value="job.State" For="@(()=>job.State)"></MudTextField>
+            <MudSelect Label="Country" @bind-Value="job.Country">
+            @foreach (var country in countries)
+            {
+                <MudSelectItem Value="country.Country">@country.Country</MudSelectItem>
+            }
+            </MudSelect>
+            <br />
+            <br />
+            <InputFile id="fileInput" OnChange="OnFileChange" hidden />
+            <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Filled.CloudUpload" for="fileInput">Select Company Logo</MudButton>
+            <MudImage Src="@job.CompanyImage" Elevation="25" Class="rounded my-2"></MudImage>
         </MudCardContent>
     </MudCard>
 
-    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="mr-4 mt-4">Update Job</MudButton>
+    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Info" Class="mr-4 mt-4">Update Job</MudButton>
     
 </EditForm>
 
 @code {
     [Parameter]
     public int? Id { get; set; }
+    [Parameter]
+    public string? user { get; set; }
 
     JobPortalMud.Shared.JobList job = new JobPortalMud.Shared.JobList();
     public List<JobTypes>? jobTypes = new List<JobTypes>();
     public List<Countries>? countries = new List<Countries>();
+    public List<Categories>? categories = new List<Categories>();
+
 
 
     protected override async Task OnInitializedAsync()
@@ -71,6 +92,11 @@
         {
             countries = result2;
         }
+        var result3 = await Http.GetFromJsonAsync<List<Categories>>("api/JobList/categories");
+        if (result3 != null)
+        {
+            categories = result3;
+        }
     }
 
 
@@ -84,6 +110,51 @@
 
     async Task HandleSubmit()
     {
-        await JobService.UpdateJob(job);
+        if (job.CompanyImage.Length > 0)
+        {
+            await JobService.UpdateJob(job, user);
+            snackBar.Add("Job Updated Successfully", Severity.Success);
+        }
+        else
+        {
+            snackBar.Add("Please select Logo...", Severity.Warning);
+        }
+    }
+
+    async Task OnFileChange(InputFileChangeEventArgs e)
+    {
+        if (IsValidExtension(e.File))
+        {
+            var format = e.File.ContentType;
+            var resizedImage = await e.File.RequestImageFileAsync(format, 200, 200);
+            var buffer = new byte[resizedImage.Size];
+            await resizedImage.OpenReadStream().ReadAsync(buffer);
+            var imageData = $"data:{format};base64,{Convert.ToBase64String(buffer)}";
+            job.CompanyImage = imageData;
+        }
+        else
+        {
+            snackBar.Add("Please select .jpg, .jpeg, .png files only...", Severity.Warning);
+        }
+    }
+
+    bool IsValidExtension(IBrowserFile file)
+    {
+        bool isValid = false;
+        string[] fileExtension = { ".jpg", ".jpeg", ".png" };
+
+        for (int i = 0; i <= fileExtension.Length - 1; i++)
+        {
+            if (file.Name.Contains(fileExtension[i]))
+            {
+                isValid = true;
+                break;
+            }
+            else
+            {
+                isValid = false;
+            }
+        }
+        return isValid;
     }
 }

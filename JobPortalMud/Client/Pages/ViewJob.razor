@@ -1,0 +1,275 @@
+﻿@page "/viewjob/{id:int}/{user}"
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@inject IJobService JobService
+@inject IAppliedJobService AppliedJobService
+@inject IBookmarkedJobService BookmarkedJobService
+@inject MudBlazor.ISnackbar snackBar
+@inject HttpClient Http
+@inject NavigationManager navigationManager
+
+<MudGrid Style="background-image: url('Images/apply.jpg');" Class="rounded-lg">
+    <MudItem xs="7">
+        <MudText Typo="Typo.h4" Align="Align.Start" GutterBottom="true"><b>@job.Title</b></MudText>
+        <a href="/">Home</a> <span class="mx-2 slash">/</span>
+        <a href="/category/@user">Job Category</a> <span class="mx-2 slash">/</span>
+        <a href="/findjob/@job.CategoryId/@user">Find job</a> <span class="mx-2 slash">/</span>
+        <span class="text-black"><b>@job.Title</b></span>
+    </MudItem>
+</MudGrid>
+<br />
+<MudGrid Class="border rounded mt-8">
+        <MudItem xs="2" Class="text-center">
+        @{
+            if (job.CompanyImage.Length > 0)
+            {
+                Image = job.CompanyImage;
+            }
+            else
+            {
+                Image = @"Images\company.png";
+            }
+        }
+            <MudImage Src="@Image" Width="100" Height="100" Alt="Image" Elevation="25" Class="rounded-lg ma-4" />
+        </MudItem>
+        <MudItem xs="5">
+            <MudText Typo="Typo.h5" Style="margin:15px"><b>@job.Title</b></MudText>
+            <MudText Typo="Typo.subtitle1"><MudIcon Icon="@Icons.Material.Filled.Monitor" Size="Size.Small" />&nbsp;@job.CompanyName&nbsp;&nbsp;&nbsp;<MudIcon Icon="@Icons.Material.Filled.LocationOn" Size="Size.Small" />&nbsp;@job.Address, @job.State, @job.Country&nbsp;&nbsp;&nbsp;<MudIcon Icon="@Icons.Material.Filled.Timer" Size="Size.Small" />&nbsp;@job.JobType</MudText>
+        </MudItem>
+        <MudItem xs="2" Class="text-center">
+            <br />
+        @{
+            if (appliedJobs.Count == 0)
+            {
+                if (bookmarkedJobs.Count > 0)
+                {
+                    <MudButton Variant="Variant.Outlined" Color="Color.Info" Class="mr-4 mt-4"><MudIcon Icon="@Icons.Material.Filled.Favorite" />&nbsp;Added</MudButton>
+                }
+                else
+                {
+                    <MudButton Variant="Variant.Outlined" Color="Color.Info" OnClick="() => AddBookmark(job.JobId, user)" Class="mr-4 mt-4"><MudIcon Icon="@Icons.Material.Outlined.FavoriteBorder" />&nbsp;Favourite</MudButton>
+                }
+            }
+            else
+            {
+                <MudButton Variant="Variant.Outlined" Color="Color.Info" Class="mr-4 mt-4" Disabled><MudIcon Icon="@Icons.Material.Filled.Favorite" />&nbsp;Favourite</MudButton>
+            }
+        }
+    </MudItem>
+    <MudItem xs="2">
+        <br />
+        <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="() => ApplyJob(job.JobId, user)" Class="mr-4 mt-4">@(appliedJobs.Count > 0 ? "Applied" : "Apply Now")</MudButton>
+    </MudItem>
+</MudGrid>
+<br />
+<MudCard>
+    <MudText Typo="Typo.h5" Style="margin:15px"><b>Job Summary</b></MudText>
+    <MudSimpleTable Striped="true" Bordered="true" Outlined="true" Dense="false" Hover="true" Class="card-body pt-0">
+        <br />
+        <tr>
+            <th width="30%">Published On</th>
+            <td width="2%">:</td>
+            <td>@job.CreateDate</td>
+        </tr>
+        <tr>
+            <th width="30%">Vacancy</th>
+            <td width="2%">:</td>
+            <td>@job.NoOfPost</td>
+        </tr>
+        <tr>
+            <th width="30%">Employment Status</th>
+            <td width="2%">:</td>
+            <td>@job.JobType</td>
+        </tr>
+        <tr>
+            <th width="30%">Job Location</th>
+            <td width="2%">:</td>
+            <td>@job.Address, @job.State, @job.Country</td>
+        </tr>
+        <tr>
+            <th width="30%">Salary</th>
+            <td width="2%">:</td>
+            <td>@job.Salary</td>
+        </tr>
+        <tr>
+            <th width="30%">Application Deadline</th>
+            <td width="2%">:</td>
+            <td>@job.LastDateToApply</td>
+        </tr>
+    </MudSimpleTable>
+</MudCard>
+<MudCard>
+    <MudText Typo="Typo.h5" Style="margin:15px"><b>Get In Touch</b></MudText>
+    <MudSimpleTable Striped="true" Bordered="true" Outlined="true" Dense="false" Hover="true" Class="card-body pt-0">
+        <br />
+        <tr>
+            <th width="30%">Email</th>
+            <td width="2%">:</td>
+            <td>@job.Email</td>
+        </tr>
+        <tr>
+            <th width="30%">Website</th>
+            <td width="2%">:</td>
+            <td>@job.Website</td>
+        </tr>
+    </MudSimpleTable>
+</MudCard>
+<MudCard>
+    <MudText Typo="Typo.h5" Style="margin:15px"><MudIcon Icon="@Icons.Material.Filled.Description" /><b>Job Description</b></MudText>
+    <MudText Typo="Typo.body1" Style="margin:15px">@job.Description</MudText>
+    <br />
+    <MudText Typo="Typo.h5" Style="margin:15px"><MudIcon Icon="@Icons.Material.Filled.Book" /><b>Experience and Specialization</b></MudText>
+    <MudList Dense="true" >
+        <MudListItem Text="@job.Experience" Icon="@Icons.Material.Filled.StarBorder" />
+        <MudListItem Text="@job.Specialization" Icon="@Icons.Material.Filled.StarBorder" />
+    </MudList>
+    <br />
+</MudCard>
+<MudCard>
+    <MudText Typo="Typo.h5" Style="margin:15px"><b>General Information</b></MudText>
+    <MudIconButton Icon="@Icons.Custom.Brands.Facebook" Color="Color.Info" aria-label="Facebook" />
+    <MudIconButton Icon="@Icons.Custom.Brands.Twitter" Color="Color.Info" aria-label="Twitter"/>
+    <MudIconButton Icon="@Icons.Custom.Brands.Pinterest" Color="Color.Info" aria-label="Pinterest" />
+    <MudIconButton Icon="@Icons.Custom.Brands.LinkedIn" Color="Color.Info" aria-label="LinkedIn" />
+    <br />
+</MudCard>
+
+
+    @code {
+    [Parameter]
+    public int? Id { get; set; }
+
+    [Parameter]
+    public string? user { get; set; }
+
+    JobPortalMud.Shared.JobList job = new JobPortalMud.Shared.JobList();
+
+    AppliedJob appliedJob = new AppliedJob();
+    public List<AppliedJob> appliedJobs = new List<AppliedJob>();
+
+    BookMark bookmarkedJob = new BookMark();
+    public List<BookMark> bookmarkedJobs = new List<BookMark>();
+
+    User Singleuser = new User();
+
+    public string Image = "";
+    public bool Favorite { get; set; }
+    public int DelId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await Http.GetFromJsonAsync<List<BookMark>>($"api/BookMark/bookmarked/{Id}/{user}");
+        if (result != null)
+        {
+            bookmarkedJobs = result;
+        }
+        var result1 = await Http.GetFromJsonAsync<List<AppliedJob>>($"api/AppliedJob/apply/{Id}/{user}");
+        if (result1 != null)
+        {
+            appliedJobs = result1;
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id != null)
+        {
+            job = await JobService.GetSingleJob((int)Id);
+        }
+    }
+
+    async Task ApplyJob(int id, string user)
+    {
+        if (await IsUploaded())
+        {
+            if (!await IsApplied())
+            {
+                 appliedJob.UserName = user;
+                 appliedJob.JobId = id;
+                 await AppliedJobService.CreateAppliedJob(appliedJob, id, user);
+                 snackBar.Add("Job Applied Successfully", Severity.Success);
+            }
+            else
+            {
+                snackBar.Add("You have already applied this job", Severity.Warning);
+            }
+        }
+        else
+        {
+            navigationManager.NavigateTo($"editprofile/{user}");
+        }
+    }
+
+    async Task AddBookmark(int id, string user)
+    {
+        if (!await IsApplied())
+        {
+            if (!await IsBookmarked())
+            {
+                bookmarkedJob.UserName = user;
+                bookmarkedJob.JobId = id;
+                await BookmarkedJobService.CreateBookMarkedJob(bookmarkedJob, id, user);
+                snackBar.Add("Job Added in Favourites Successfully", Severity.Success);
+            }
+            else
+            {
+                snackBar.Add("You have already added this job in favourites", Severity.Warning);
+            }
+        }
+        else
+        {
+            snackBar.Add("You have already applied this job", Severity.Warning);
+        }
+    }
+
+    async Task<bool> IsApplied()
+    {
+        var result = await Http.GetFromJsonAsync<List<AppliedJob>>($"api/AppliedJob/apply/{Id}/{user}");
+        if (result != null)
+        {
+            appliedJobs = result;
+        }
+        if (appliedJobs.Count > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    async Task<bool> IsBookmarked()
+    {
+        var result = await Http.GetFromJsonAsync<List<BookMark>>($"api/BookMark/bookmarked/{Id}/{user}");
+        if (result != null)
+        {
+            bookmarkedJobs = result;
+        }
+        if (bookmarkedJobs.Count > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    async Task<bool> IsUploaded()
+    {
+        var result = await Http.GetFromJsonAsync<User>($"api/User/{user}");
+        if (result != null)
+        {
+            Singleuser = result;
+        }
+        if (Singleuser.Resume.Length > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+}

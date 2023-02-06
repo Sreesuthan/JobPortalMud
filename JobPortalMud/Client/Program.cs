@@ -8,6 +8,11 @@ using MudBlazor.Services;
 using JobPortalMud.Client.Services.JobService;
 using JobPortalMud.Client.Services.ContactService;
 using JobPortalMud.Client.Services.UserService;
+using JobPortalMud.Client.Services.AppliedJobService;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
+using MudBlazor;
+using JobPortalMud.Client.Services.BookmarkedJobService;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -21,10 +26,25 @@ builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().Cre
 builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddScoped<IContactService, ContactService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAppliedJobService, AppliedJobService>();
+builder.Services.AddScoped<IBookmarkedJobService, BookmarkedJobService>();
 
-builder.Services.AddMudServices();
+builder.Services.AddMudServices(config =>
+{
+    config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopCenter;
+
+    config.SnackbarConfiguration.PreventDuplicates = false;
+    config.SnackbarConfiguration.NewestOnTop = false;
+    config.SnackbarConfiguration.ShowCloseIcon = true;
+    config.SnackbarConfiguration.VisibleStateDuration = 10000;
+    config.SnackbarConfiguration.HideTransitionDuration = 500;
+    config.SnackbarConfiguration.ShowTransitionDuration = 500;
+    config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
+});
 
 builder.Services.AddApiAuthorization();
+builder.Services.AddOptions();
+builder.Services.AddAuthorizationCore();
 
 
 await builder.Build().RunAsync();

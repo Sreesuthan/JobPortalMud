@@ -1,24 +1,56 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using System.Security.Claims
 
-@inject NavigationManager Navigation
-@inject SignOutSessionStateManager SignOutManager
+@inject NavigationManager navigationManager
+@inject HttpClient Http
+@inject AuthenticationStateProvider Auth
 
 <AuthorizeView>
     <Authorized>
-        <a href="authentication/profile">Hello, @context.User.Identity?.Name!</a>
-        <button class="nav-link btn btn-link " @onclick="BeginSignOut">Log out</button>
+        @if (role.UserName.Length > 0  && (role.Name == "Job Seeker" || role.LoginProvider == "Google"))
+        {
+            <MudButton Size="Size.Medium" Variant="Variant.Outlined" Color="Color.Inherit" OnClick="() => Profile(context.User.Identity.Name)" Class="mr-4 mt-4">Hello, @context.User.Identity?.Name</MudButton>
+        }
+        <MudButton Href="Identity/Account/Logout" Size="Size.Medium" Variant="Variant.Outlined" Color="Color.Inherit" Class="mr-4 mt-4">Logout</MudButton>
     </Authorized>
     <NotAuthorized>
-        <a href="authentication/register">Register</a>
-        <a href="authentication/login">Log in</a>
+        <MudButton Href="Identity/Account/Login" Size="Size.Medium" Variant="Variant.Outlined" Color="Color.Inherit" Class="mr-4 mt-4">Log in</MudButton>
+        <MudButton Href="Identity/Account/Register" Size="Size.Medium" Variant="Variant.Outlined" Color="Color.Inherit" Class="mr-4 mt-4">Sign Up</MudButton>
     </NotAuthorized>
 </AuthorizeView>
 
+
 @code{
-    private async Task BeginSignOut(MouseEventArgs args)
+    Role role = new Role();
+
+    protected override async Task OnInitializedAsync()
     {
-        await SignOutManager.SetSignOutState();
-        Navigation.NavigateTo("authentication/logout");
+        var userDetails = (await Auth.GetAuthenticationStateAsync()).User.Identity;
+        if (userDetails != null && userDetails.IsAuthenticated)
+        {
+            var user = userDetails.Name; 
+            if (user.Contains("@gmail.com"))
+            {
+                var result = await Http.GetFromJsonAsync<Role>($"api/User/external/{user}");
+                if (result != null)
+                {
+                    role = result;
+                }
+            }
+            else
+            {
+                var result = await Http.GetFromJsonAsync<Role>($"api/User/role/{user}");
+                if (result != null)
+                {
+                    role = result;
+                }
+            }
+        }
+    }
+
+    void Profile(string username)
+    {
+        navigationManager.NavigateTo($"profile/{username}");
     }
 }

@@ -1,0 +1,53 @@
+﻿@page "/editprofile/{username}"
+@using System.Net.Http.Headers;
+@inject IUserService UserService
+@inject HttpClient Http
+@inject MudBlazor.ISnackbar snackBar
+
+
+
+<MudGrid Style="background-image: url('Images/apply.jpg');" Class="rounded-lg">
+    <MudItem xs="7">
+        <MudText Typo="Typo.h4" Align="Align.Start" GutterBottom="true"><b>Edit Profile</b></MudText>
+        <a href="/">Home</a> <span class="mx-2 slash">/</span>
+        <a href="/profile/@UserName">Profile</a> <span class="mx-2 slash">/</span>
+        <span class="text-black"><b>Edit Profile</b></span>
+    </MudItem>
+</MudGrid>
+<br />
+
+<EditForm Model="user" OnValidSubmit="HandleSubmit">
+    <DataAnnotationsValidator />
+    <MudCard Class="mt-8 mb-10">
+        <MudCardContent>
+            <h3 class="text-align:center; text-black mb-5 border-bottom pb-2">Personal Details</h3>
+            <MudTextField Label="Full Name" @bind-Value="user.Name" For="@(()=>user.Name)" Placeholder="Enter Your Full Name"></MudTextField>
+            <MudTextField Label="Address" @bind-Value="user.Address" Placeholder="Enter Address" For="@(()=>user.Address)"></MudTextField>
+            <MudTextField Label="Mobile Number" @bind-Value="user.mobile" Placeholder="Enter Mobile Number" For="@(()=>user.mobile)"></MudTextField>
+            <MudTextField Label="Email" @bind-Value="user.Email" Placeholder="Enter Email" For="@(()=>user.Email)"></MudTextField>
+            <br />
+            <InputFile id="fileInput1" OnChange="OnFileChangeImg" hidden />
+            <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Material.Filled.CloudUpload" for="fileInput1">Select Profile Picture</MudButton>
+            <MudImage Src="@user.ProfileImage" Elevation="25" Class="rounded my-2"></MudImage>
+            <br />
+            <MudSelect Label="Country" @bind-Value="user.Country">
+                @foreach (var country in countries)
+                {
+                    <MudSelectItem Value="country.Country">@country.Country</MudSelectItem>
+                }
+                </MudSelect>
+
+            <MudTextField Label="Achievements" @bind-Value="user.WorksOn" Placeholder="Enter Career" For="@(()=>user.WorksOn)"></MudTextField>
+            <MudTextField Label="Working Experience" @bind-Value="user.Experience" Placeholder="Ex: 2 years" For="@(()=>user.Experience)"></MudTextField>
+            <br />
+            <InputFile  id="fileInput2" OnChange="OnFileChangeDoc" hidden />
+            <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Material.Filled.CloudUpload" for="fileInput2">Select Resume</MudButton>
+            <MudText Typo="Typo.subtitle2">@user.OriginalFileName</MudText>
+            
+        </MudCardContent>
+    </MudCard>
+
+    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Info" Class="mr-4 mt-4">Update Profile</MudButton>
+    
+</EditForm>
+

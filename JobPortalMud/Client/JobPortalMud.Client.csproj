@@ -7,15 +7,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Pages\PostJob.razor~RF7b3cba9.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.11" PrivateAssets="all" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="6.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.Server.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
     <PackageReference Include="MudBlazor" Version="6.1.7" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Shared\JobPortalMud.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\Files\" />
   </ItemGroup>
 
 </Project>

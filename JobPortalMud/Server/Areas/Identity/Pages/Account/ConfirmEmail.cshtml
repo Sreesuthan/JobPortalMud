@@ -1,0 +1,22 @@
+﻿@page
+@model ConfirmEmailModel
+@{
+    ViewData["Title"] = "Confirm email";
+}
+
+<div class="container ">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 border rounded-3">
+            <h2 class="mt-3 mb-3">Email confirmed</h2>
+            @if (TempData["AlertMessage"] != null)
+            {
+                <div class="col-12 pb-20">
+                    <div class="alert alert-success">
+                        @TempData["AlertMessage"]
+                        <h6>Go to <Strong><a style="text-decoration: none" href="./Login">Login</a></Strong> page</h6>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

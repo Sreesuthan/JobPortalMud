@@ -1,0 +1,128 @@
+﻿@page "/appliedjoblist/{username}"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@attribute [Authorize]
+@inject IAppliedJobService AppliedJobService
+@inject HttpClient Http
+@inject IJSRuntime JS
+@inject MudBlazor.ISnackbar snackBar
+
+<MudGrid Style="background-image: url('Images/apply.jpg');" Class="rounded-lg">
+    <MudItem xs="7">
+        <MudText Typo="Typo.h4" Align="Align.Start" GutterBottom="true"><b>Job Applications</b></MudText>
+        <a href="/">Home</a> <span class="mx-2 slash">/</span>
+        <span class="text-black"><b>Job Applications</b></span>
+    </MudItem>
+</MudGrid>
+<br />
+@if (AppliedJobService.AppliedJobs.Count != 0)
+{
+    <MudTable Items="AppliedJobService.AppliedJobs" Elevation="10" Hover="true" Striped="true" Dense="true" Filter="new Func<JobPortalMud.Shared.AppliedJob, bool>(Search)" Class="mt-8 mb-10">
+        <ToolBarContent>
+            <MudSpacer />
+            <MudTextField @bind-Value="searchstring" Placeholder="Search jobs..." Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" HelperText="Enter Job title or Full Name or Email or Mobile No."></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Sr.No</MudTh>
+        <MudTh>Full Name</MudTh>
+        <MudTh>Mobile No.</MudTh>
+        <MudTh>Email</MudTh>
+        <MudTh>Job Title</MudTh>
+        <MudTh>Comapany Name</MudTh>
+        <MudTh>Resume</MudTh>
+        <MudTh>Action</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Sr.No">@context.SrNo</MudTd>
+            <MudTd DataLabel="Full Name">@context.Name</MudTd>
+            <MudTd DataLabel="Mobile No.">@context.mobile </MudTd>
+            <MudTd DataLabel="Email">@context.Email</MudTd>
+        <MudTd DataLabel="Job Title">@context.Title</MudTd>
+            <MudTd DataLabel="Comapany Name">@context.CompanyName</MudTd>
+            <MudTd DataLabel="Resume">
+                <MudIconButton OnClick="() => DownloadResume(context.Id)"
+                           Icon="@Icons.Material.Filled.Download"
+                           Color="Color.Info"
+                           Variant="Variant.Filled">
+                </MudIconButton>
+            </MudTd>
+            <MudTd DataLabel="Delete">
+                <MudIconButton OnClick="() => DeleteApplication(context.Id, UserName)"
+                           Icon="@Icons.Material.Filled.Delete"
+                           Color="Color.Error"
+                           Variant="Variant.Filled">
+                </MudIconButton>
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager PageSizeOptions="new int[] {5, 10, 15, 20, 50, 100}" />
+        </PagerContent>
+        </MudTable>
+}
+else
+{
+    <MudText Typo="Typo.h5" Align="Align.Start" GutterBottom="true" Class="mt-8 mb-10">No Job Applications found...</MudText>
+}
+
+
+
+@code {
+    [Parameter]
+    public string? UserName { get; set; }
+    private string searchstring = "";
+
+    AppliedJob appliedJob = new AppliedJob();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await AppliedJobService.GetAllAppliedJobs(UserName);
+    }
+
+    private async Task DownloadResume(int id)
+    {
+        appliedJob = await AppliedJobService.GetSingleAppliedJob(id);
+        string path = appliedJob.Resume;
+        string contentType = appliedJob.FileContentType;
+        string fileName = appliedJob.StoredFileName;
+        var response = await Http.GetAsync($"/api/File/{path}/{contentType}");
+        if (!response.IsSuccessStatusCode)
+        {
+            await JS.InvokeVoidAsync("alert", "File not found");
+        }
+        else
+        {
+            var fileStream = response.Content.ReadAsStream();
+            using var streamRef = new DotNetStreamReference(stream: fileStream);
+            await JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
+        }
+    }
+
+    private async Task DeleteApplication(int id, string user)
+    {
+        if (!await JS.InvokeAsync<bool>("confirm", "Are you sure you want to delete ?"))
+        {
+            return;
+        }
+        else
+        {
+            await AppliedJobService.DeleteAppliedJob(id, user);
+            snackBar.Add("Application Deleted Successfully", Severity.Success);
+        }
+    }
+
+    private bool Search(JobPortalMud.Shared.AppliedJob appliedJob)
+    {
+        if (appliedJob.Title != null && appliedJob.mobile != 0 && appliedJob.Name != null && appliedJob.Email != null &&
+           (appliedJob.Title.Contains(searchstring, StringComparison.OrdinalIgnoreCase) ||
+            appliedJob.UserName.Contains(searchstring, StringComparison.OrdinalIgnoreCase) ||
+            appliedJob.Name.Contains(searchstring, StringComparison.OrdinalIgnoreCase) ||
+            appliedJob.Email.Contains(searchstring, StringComparison.OrdinalIgnoreCase)))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+}

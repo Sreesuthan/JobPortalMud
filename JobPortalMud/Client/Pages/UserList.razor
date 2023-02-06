@@ -3,18 +3,30 @@
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @attribute [Authorize]
 @inject IUserService UserService
+@inject MudBlazor.ISnackbar snackBar
+@inject IJSRuntime Js
 
-
-<h3>User List</h3>
+<MudGrid Style="background-image: url('Images/apply.jpg');" Class="rounded-lg">
+    <MudItem xs="7">
+        <MudText Typo="Typo.h4" Align="Align.Start" GutterBottom="true"><b>Registered Users</b></MudText>
+        <a href="/">Home</a> <span class="mx-2 slash">/</span>
+        <span class="text-black"><b>Registered Users</b></span>
+    </MudItem>
+</MudGrid>
+<br/>
 @if (UserService.users.Count != 0)
 {
-    <MudTable Items="UserService.users" Hover="true" Striped="true" Dense="true" Class="mb-2">
+    <MudTable Items="UserService.users" Elevation="10" Hover="true" Striped="true" Dense="true" Filter="new Func<JobPortalMud.Shared.User, bool>(Search)" Class="mt-8 mb-10">
+        <ToolBarContent>
+            <MudSpacer/>
+            <MudTextField @bind-Value="searchstring" Placeholder="Search Registered users..." Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" HelperText="Enter Full Name or Email or mobile No."></MudTextField>
+        </ToolBarContent>
         <HeaderContent>
             <MudTh>Sr.No</MudTh>
             <MudTh>Full Name</MudTh>
             <MudTh>Email</MudTh>
             <MudTh>Mobile No.</MudTh>
-            <MudTh>Country</MudTh>
+            <MudTh>Address</MudTh>
             <MudTh>Action</MudTh>
         </HeaderContent>
         <RowTemplate>
@@ -22,32 +34,59 @@
             <MudTd DataLabel="Full Name">@context.Name</MudTd>
             <MudTd DataLabel="Email">@context.Email </MudTd>
             <MudTd DataLabel="Mobile No">@context.mobile</MudTd>
-            <MudTd DataLabel="Country">@context.Country</MudTd>
+            <MudTd DataLabel="Address">@context.Address</MudTd>
             <MudTd DataLabel="Action">
-                <MudIconButton OnClick="() => DeleteJob(context.UserName)"
+                <MudIconButton OnClick="() => DeleteUser(context.UserName)"
                            Icon="@Icons.Material.Filled.Delete"
                            Color="Color.Error"
                            Variant="Variant.Filled">
                 </MudIconButton>
             </MudTd>
         </RowTemplate>
+        <PagerContent>
+            <MudTablePager PageSizeOptions="new int[] {5, 10, 15, 20, 50, 100}" />
+        </PagerContent>
     </MudTable>
 }
 else
 {
-    <h5>No Users found...</h5>
+    <MudText Typo="Typo.h5" Align="Align.Start" GutterBottom="true" Class="mt-8 mb-10">No Users found...</MudText>
 }
 
 
 @code {
+    private string searchstring = "";
 
     protected override async Task OnInitializedAsync()
     {
         await UserService.GetAllUsers();
     }
 
-    private async Task DeleteJob(string name)
+    private async Task DeleteUser(string name)
     {
-        await UserService.DeleteUser(name);
+        if (!await Js.InvokeAsync<bool>("confirm", "Are you sure you want to delete ?"))
+        {
+            return;
+        }
+        else
+        {
+            await UserService.DeleteUser(name);
+            snackBar.Add("User Deleted Successfully", Severity.Success);
+        }
+    }
+
+    private bool Search(JobPortalMud.Shared.User user)
+    {
+        if (user.mobile != null && user.Name != null && user.Email != null &&
+            (user.UserName.Contains(searchstring, StringComparison.OrdinalIgnoreCase) ||
+            user.Name.Contains(searchstring, StringComparison.OrdinalIgnoreCase) ||
+            user.Email.Contains(searchstring, StringComparison.OrdinalIgnoreCase)))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }

@@ -1,0 +1,98 @@
+﻿@page "/profile/{username}"
+@inject IUserService UserService
+@inject NavigationManager navigationManager
+
+<MudGrid Style="background-image: url('Images/apply.jpg');" Class="rounded-lg">
+    <MudItem xs="7">
+        <MudText Typo="Typo.h4" Align="Align.Start" GutterBottom="true"><b>Profile</b></MudText>
+        <a href="/">Home</a> <span class="mx-2 slash">/</span>
+        <span class="text-black"><b>Profile</b></span>
+    </MudItem>
+</MudGrid>
+<br />
+<MudGrid Justify="Justify.Center" Class="border rounded-3 mt-8 mb-10">
+    <MudItem xs="4" Class="border text-center">
+        @{
+            if (user.ProfileImage.Length > 0)
+            {
+                Image = user.ProfileImage;
+            }
+            else
+            {
+                Image = @"Images\picture-profile.jpg";
+            }
+        }
+        <MudImage Src="@Image" Width="100" Height="100" Alt="Profile" Elevation="25" Class="rounded-lg ma-4" />
+        <MudText Align="Align.Center" Typo="Typo.h6">@user.Name</MudText>
+        <MudText Align="Align.Center" Typo="Typo.subtitle2">@user.UserName</MudText>
+        <MudText Align="Align.Center" Typo="Typo.subtitle2">@user.Country</MudText>
+            <br />
+    </MudItem>
+    <MudItem xs="8" Class="border">
+            <MudText Typo="Typo.h5" Style="margin:15px"><b>General Information</b></MudText>
+            <MudSimpleTable Striped="true" Bordered="true" Outlined="true" Dense="false" Hover="true" Class="card-body pt-0">
+                <br/>
+                <tr>
+                    <th width="30%">Full Name</th>
+                    <td width="2%">:</td>
+                    <td>@user.Name</td>
+                </tr>
+                <tr>
+                    <th width="30%">Email</th>
+                    <td width="2%">:</td>
+                    <td>@user.Email</td>
+                </tr>
+                <tr>
+                    <th width="30%">Mobile</th>
+                    <td width="2%">:</td>
+                    <td>@user.mobile</td>
+                </tr>
+                <tr>
+                    <th width="30%">Address</th>
+                    <td width="2%">:</td>
+                    <td>@user.Address</td>
+                </tr>
+                <tr>
+                    <th width="30%">Resume</th>
+                    <td width="2%">:</td>
+                    @if (user.Resume.Length > 0)
+                    {
+                        <td>Resume Uploaded</td>
+
+                    }
+                    else
+                    {
+                        <td>Resume not uploaded</td>
+                    }
+                </tr>
+                </MudSimpleTable>
+                <div class="right-cta-menu text-right d-flex aligin-items-center col-6">
+                    <div class="ml-auto">
+                        <MudButton Variant="Variant.Filled"  Color="Color.Info" OnClick="() => EditProfile(UserName)"
+                        Icon="@Icons.Material.Filled.Edit" Class="mr-4 mt-4" Style="align:center">Edit</MudButton>
+                    <br/>
+                    <br/>
+                    </div>
+                </div>
+    </MudItem>
+</MudGrid>
+
+@code {
+    [Parameter]
+    public string? UserName { get; set; }
+    User user = new User();
+    public string Image = "";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (UserName != null)
+        {
+            user = await UserService.GetSingleUser(UserName);
+        }
+    }
+
+    void EditProfile(string username)
+    {
+        navigationManager.NavigateTo($"editprofile/{username}");
+    }
+}

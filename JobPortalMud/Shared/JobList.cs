@@ -28,9 +28,13 @@ namespace JobPortalMud.Shared
         public Countries? Countries { get; set; }
         public string Country { get; set; } = string.Empty;
         public string State { get; set; } = string.Empty;
-        public DateTime? CreateDate { get; set; } = DateTime.Now;
+        public DateTime? CreateDate { get; set; }
         public string LastDate { get; set; } = string.Empty;
         public string NoPost { get; set; } = string.Empty;
-        public string Status { get; set; } = string.Empty;
+        public bool Active { get; set; }
+        public string Employer { get; set; } = string.Empty;
+        public int CategoryId { get; set; }
+        public string? Category { get; set; }
+        public long DateDiffMin { get; set; }
     }
 }

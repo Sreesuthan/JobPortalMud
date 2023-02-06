@@ -3,19 +3,33 @@
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @attribute [Authorize]
 @inject IContactService ContactService
+@inject NavigationManager navigationManager
+@inject MudBlazor.ISnackbar snackBar
+@inject IJSRuntime Js
 
-
-<h3>Contact List</h3>
+<MudGrid Style="background-image: url('Images/apply.jpg');" Class="rounded-lg">
+    <MudItem xs="7">
+        <MudText Typo="Typo.h4" Align="Align.Start" GutterBottom="true"><b>Complaints and Queries</b></MudText>
+        <a href="/">Home</a> <span class="mx-2 slash">/</span>
+        <span class="text-black"><b>Complaints and Queries</b></span>
+    </MudItem>
+</MudGrid>
+<br />
 @if (ContactService.contacts.Count != 0)
 {
-    <MudTable Items="ContactService.contacts" Hover="true" Striped="true" Dense="true" Class="mb-2">
+    <MudTable Items="ContactService.contacts" Elevation="10" Hover="true" Striped="true" Dense="true" Filter="new Func<JobPortalMud.Shared.Contact, bool>(Search)" Class="mt-8 mb-10">
+        <ToolBarContent>
+            <MudSpacer/>
+            <MudTextField @bind-Value="searchstring" Placeholder="Search Complaints and Queries..." Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium"></MudTextField>
+        </ToolBarContent>
         <HeaderContent>
             <MudTh>Sr.No</MudTh>
             <MudTh>First Name</MudTh>
             <MudTh>Last Name</MudTh>
             <MudTh>Email</MudTh>
             <MudTh>Subject</MudTh>
-            <MudTh>Action</MudTh>
+            <MudTh>View</MudTh>
+            <MudTh>Delete</MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Sr.No">@context.SrNo</MudTd>
@@ -23,31 +37,71 @@
             <MudTd DataLabel="Last Name">@context.LastName </MudTd>
             <MudTd DataLabel="Email">@context.Email</MudTd>
             <MudTd DataLabel="Subject">@context.Subject</MudTd>
+            <MudTd DataLabel="View">
+                <MudIconButton OnClick="() => ViewContact(context.Id)"
+                           Icon="@Icons.Material.Filled.ArrowRightAlt"
+                           Color="Color.Info"
+                           Variant="Variant.Filled">
+                </MudIconButton>
+            </MudTd>
             <MudTd DataLabel="Action">
-                <MudIconButton OnClick="() => DeleteJob(context.Id)"
+                <MudIconButton OnClick="() => DeleteContact(context.Id)"
                            Icon="@Icons.Material.Filled.Delete"
                            Color="Color.Error"
                            Variant="Variant.Filled">
                 </MudIconButton>
             </MudTd>
         </RowTemplate>
+        <PagerContent>
+            <MudTablePager PageSizeOptions="new int[] {5, 10, 15, 20, 50, 100}"/>
+        </PagerContent>
     </MudTable>
 }
 else
 {
-    <h5>No contacts found...</h5>
+    <MudText Typo="Typo.h5" Align="Align.Start" GutterBottom="true" Class="mt-8 mb-10">No contacts found...</MudText>
 }
 
 
 @code {
+    private string searchstring = "";
 
     protected override async Task OnInitializedAsync()
     {
         await ContactService.GetAllContacts();
     }
 
-    private async Task DeleteJob(int id)
+    private async Task DeleteContact(int id)
     {
-        await ContactService.DeleteContact(id); 
+        if (!await Js.InvokeAsync<bool>("confirm", "Are you sure you want to delete ?"))
+        {
+            return;
+        }
+        else
+        {
+            await ContactService.DeleteContact(id);
+            snackBar.Add("Contact Deleted Successfully", Severity.Success);
+        }
+    }
+
+    void ViewContact(int id)
+    {
+        navigationManager.NavigateTo($"viewcontact/{id}");
+    }
+
+    private bool Search(JobPortalMud.Shared.Contact contact)
+    {
+        if (contact.FirstName != null && contact.LastName != null && contact.Email != null && contact.Subject != null &&
+            (contact.FirstName.Contains(searchstring, StringComparison.OrdinalIgnoreCase) ||
+            contact.LastName.Contains(searchstring, StringComparison.OrdinalIgnoreCase) ||
+            contact.Email.Contains(searchstring, StringComparison.OrdinalIgnoreCase) ||
+            contact.Subject.Contains(searchstring, StringComparison.OrdinalIgnoreCase)))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }

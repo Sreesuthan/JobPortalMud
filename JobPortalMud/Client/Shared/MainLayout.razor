@@ -1,33 +1,106 @@
 ﻿@inherits LayoutComponentBase
-
+@inject AuthenticationStateProvider Auth
+@inject HttpClient Http
 <MudThemeProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
 <MudLayout>
-    <MudAppBar Elevation="0">
+    <MudAppBar Color="Color.Info" Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudText Typo="Typo.h5" Class="ml-10">Entertainment<br />Career.Net</MudText>
+        <MudSpacer />
         <MudSpacer />
         <LoginDisplay />
     </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
-        <MudDrawerHeader>
-            <MudText Typo="Typo.h6">JobPortal</MudText>
-        </MudDrawerHeader>
+    <MudDrawer Style="background-color:lightskyblue" @bind-Open="@_drawerOpen" Fixed="true" Elevation="2" Variant="@DrawerVariant.Mini" OpenMiniOnHover="true">
         <NavMenu />
     </MudDrawer>
     <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.Large" Class="my-16 pt-16">
+        <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="pt-7">
             @Body
         </MudContainer>
+        <footer class="site-footer">
+            <hr>
+            <div class="container">
+                <div class="row mb-5 justify-content-center">
+                    @{
+                        if (user.Length != 0)
+                        {
+                            <div class="col-6 col-md-3 mb-4 mb-md-0">
+                                <h3>Recently Posted</h3>
+                                <ul class="list-unstyled">
+                                    @foreach(var job in jobs.Take(5))
+                                    {
+                                        <li><a href="viewjob/@job.JobId/@user">@job.Title</a></li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                    }
+                    <div class="col-6 col-md-3 mb-4 mb-md-0">
+                        <h3>Company</h3>
+                        <ul class="list-unstyled">
+                            <li><a href="/About">About Us</a></li>
+                            <li><a href="#">Career</a></li>
+                            <li><a href="#">Blog</a></li>
+                            <li><a href="#">Resources</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-6 col-md-3 mb-4 mb-md-0">
+                        <h3>Support</h3>
+                        <ul class="list-unstyled">
+                            <li><a href="#">Support</a></li>
+                            <li><a href="#">Privacy</a></li>
+                            <li><a href="#">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-6 col-md-3 mb-4 mb-md-0">
+                        <h3>Contact Us</h3>
+                        <div class="footer-social">
+                            <MudIconButton Icon="@Icons.Custom.Brands.Facebook" Size="Size.Small" Color="Color.Info" aria-label="Facebook" />
+                            <MudIconButton Icon="@Icons.Custom.Brands.Twitter" Size="Size.Small" Color="Color.Info" aria-label="Twitter" />
+                            <MudIconButton Icon="@Icons.Custom.Brands.Pinterest" Size="Size.Small" Color="Color.Info" aria-label="Pinterest" />
+                            <MudIconButton Icon="@Icons.Custom.Brands.LinkedIn" Size="Size.Small" Color="Color.Info" aria-label="LinkedIn" />
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row text-center">
+                    <div class="col-12">
+                        <p class="copyright">
+                            <small>
+                                Copyright © Entertainment Careers.Net, Inc |  Terms and Conditions and Privacy Policy.
+                            </small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </footer>
     </MudMainContent>
 </MudLayout>
 
 @code {
-    bool _drawerOpen = true;
+    bool _drawerOpen = false;
+    string user = "";
+    public List<JobList> jobs = new List<JobList>();
 
     void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var userDetails = (await Auth.GetAuthenticationStateAsync()).User.Identity;
+        if (userDetails != null && userDetails.IsAuthenticated)
+        {
+            user = userDetails.Name;
+            var result = await Http.GetFromJsonAsync<List<JobList>>($"api/JobList/DateDiff");
+            if (result != null)
+            {
+                jobs = result;
+            }
+        }
     }
 }

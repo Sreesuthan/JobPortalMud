@@ -1,18 +1,32 @@
-﻿@page "/joblist"
+﻿@page "/joblist/{username}"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @attribute [Authorize]
 @inject HttpClient Http
 @inject NavigationManager navigationManager
+@inject MudBlazor.ISnackbar snackBar
+@inject IJSRuntime Js
 
-<h3>JobList</h3>
-
-<MudTable Items="jobs" Hover="true" Striped="true" Dense="true" Class="mb-2">
-    <HeaderContent>
+<MudGrid Style="background-image: url('Images/apply.jpg');" Class="rounded-lg">
+    <MudItem xs="7">
+        <MudText Typo="Typo.h4" Align="Align.Start" GutterBottom="true"><b>Posted Jobs</b></MudText>
+        <a href="/">Home</a> <span class="mx-2 slash">/</span>
+        <span class="text-black"><b>Posted Jobs</b></span>
+    </MudItem>
+</MudGrid>
+<br />
+@if (jobs.Count != 0)
+{
+    <MudTable Items="jobs" Elevation="10" Hover="true" Striped="true" Dense="true" Filter="new Func<JobPortalMud.Shared.JobList, bool>(Search)" Class="mt-8 mb-10">
+        <ToolBarContent>
+            <MudSpacer />
+            <MudTextField @bind-Value="searchstring" Placeholder="Search jobs..." Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" HelperText="Enter Job title or Job Type or Country"></MudTextField>
+        </ToolBarContent>
+        <HeaderContent>
         <MudTh>Sr.No</MudTh>
         <MudTh>Job Title</MudTh>
         <MudTh>No. Of Post</MudTh>
-        <MudTh>Qualification</MudTh>
+        <MudTh>Category</MudTh>
         <MudTh>Experience</MudTh>
         <MudTh>Type</MudTh>
         <MudTh>Company</MudTh>
@@ -28,7 +42,7 @@
         <MudTd DataLabel="Sr.No">@context.SrNo</MudTd>
         <MudTd DataLabel="JobTitle">@context.Title</MudTd>
         <MudTd DataLabel="No. Of Post">@context.NoOfPost </MudTd>
-        <MudTd DataLabel="Qualification">@context.Qualification</MudTd>
+        <MudTd DataLabel="Qualification">@context.Category</MudTd>
         <MudTd DataLabel="Experience">@context.Experience</MudTd>
         <MudTd DataLabel="Type">@context.JobType</MudTd>
         <MudTd DataLabel="Company">@context.CompanyName</MudTd>
@@ -36,30 +50,43 @@
         <MudTd DataLabel="Country">@context.Country</MudTd>
         <MudTd DataLabel="Posted On">@context.CreateDate</MudTd>
         <MudTd DataLabel="Ends On">@context.LastDateToApply</MudTd>
-        <MudTd DataLabel="Status">@context.Status</MudTd>
+        <MudTd DataLabel="Status">@(context.Active == true ? "Active" : "Inactive")</MudTd>
         <MudTd DataLabel="Edit">
-            <MudIconButton OnClick="() => EditJob(context.JobId)"
+                    <MudIconButton OnClick="() => EditJob(context.JobId, UserName)"
                            Icon="@Icons.Material.Filled.Edit"
-                           Color="Color.Primary"
+                           Color="Color.Info"
                            Variant="Variant.Filled">
             </MudIconButton>
         </MudTd>
-        <MudTd DataLabel="Delete"><MudIconButton OnClick="() => DeleteJob(context.JobId)"
+                <MudTd DataLabel="Delete">
+                    <MudIconButton OnClick="() => DeleteJob(context.JobId, UserName)"
         Icon="@Icons.Material.Filled.Delete" 
                 Color="Color.Error" 
                 Variant="Variant.Filled">
             </MudIconButton></MudTd>
-    </RowTemplate>
-</MudTable>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new int[] {5, 10, 15, 20, 50, 100}" />
+            </PagerContent>
+        </MudTable>
+}
+else
+{
+    <MudText Typo="Typo.h5" Align="Align.Start" GutterBottom="true" Class="mt-8 mb-10">No Jobs found...</MudText>
+}
 
 @code {
+    [Parameter]
+    public string? UserName { get; set; }
+    private string searchstring = "";
+
     public List<JobPortalMud.Shared.JobList>? jobs = new List<JobPortalMud.Shared.JobList>();
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            var result = await Http.GetFromJsonAsync<List<JobPortalMud.Shared.JobList>>("api/JobList");
+            var result = await Http.GetFromJsonAsync<List<JobPortalMud.Shared.JobList>>($"api/JobList/jobs/{UserName}");
             if (result != null)
             {
                 jobs = result;
@@ -71,16 +98,39 @@
         }
     }
 
-    void EditJob(int id)
+    void EditJob(int id, string user)
     {
-        navigationManager.NavigateTo($"editjob/{id}");
+        navigationManager.NavigateTo($"editjob/{id}/{user}");
     }
 
-    private async Task DeleteJob(int id)
+    private async Task DeleteJob(int id, string user)
     {
-        var result = await Http.DeleteAsync($"api/JobList/{id}");   
-        var response = await result.Content.ReadFromJsonAsync<List<JobPortalMud.Shared.JobList>>();
-        jobs = response;
-        navigationManager.NavigateTo("joblist");
+        if (!await Js.InvokeAsync<bool>("confirm", "Are you sure you want to delete?"))
+        {
+            return;
+        }
+        else
+        {
+            var result = await Http.DeleteAsync($"api/JobList/{id}/{user}");
+            var response = await result.Content.ReadFromJsonAsync<List<JobPortalMud.Shared.JobList>>();
+            jobs = response;
+            navigationManager.NavigateTo($"joblist/{user}");
+            snackBar.Add("Job Deleted Successfully", Severity.Success);
+        }
+    }
+
+    private bool Search(JobPortalMud.Shared.JobList job)
+    {
+        if (job.Title != null && job.JobType != null && job.Country != null &&
+            (job.Title.Contains(searchstring, StringComparison.OrdinalIgnoreCase) ||
+            job.Country.Contains(searchstring, StringComparison.OrdinalIgnoreCase) ||
+            job.JobType.Contains(searchstring, StringComparison.OrdinalIgnoreCase)))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }

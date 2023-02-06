@@ -1,4 +1,6 @@
 ﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
+/* Googlefont Poppins CDN Link */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -62,3 +64,139 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+
+.home-content .overview-boxes {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 0 20px;
+    margin-bottom: 26px;
+}
+
+.overview-boxes .box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(100% / 4 - 15px);
+    background: #fff;
+    padding: 15px 14px;
+    border-radius: 12px;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+}
+
+.overview-boxes .box-topic {
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.home-content .box .number {
+    display: inline-block;
+    font-size: 35px;
+    margin-top: -6px;
+    font-weight: 500;
+}
+
+.home-content .box .indicator {
+    display: flex;
+    align-items: center;
+}
+
+    .home-content .box .indicator i {
+        height: 20px;
+        width: 20px;
+        background: #8FDACB;
+        line-height: 20px;
+        text-align: center;
+        border-radius: 50%;
+        color: #fff;
+        font-size: 20px;
+        margin-right: 5px;
+    }
+
+.box .indicator i.down {
+    background: #e87d88;
+}
+
+.home-content .box .indicator .text {
+    font-size: 12px;
+}
+
+.home-content .box .cart {
+    display: inline-block;
+    font-size: 32px;
+    height: 50px;
+    width: 50px;
+    background: #cce5ff;
+    line-height: 50px;
+    text-align: center;
+    color: #66b0ff;
+    border-radius: 12px;
+    margin: -15px 0 0 6px;
+}
+
+    .home-content .box .cart.two {
+        color: #2BD47D;
+        background: #C0F2D8;
+    }
+
+    .home-content .box .cart.three {
+        color: #ffc233;
+        background: #ffe8b3;
+    }
+
+    .home-content .box .cart.four {
+        color: #e05260;
+        background: #f7d4d7;
+    }
+
+.home-content .total-order {
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.home-content .sales-boxes {
+    display: flex;
+    justify-content: space-between;
+    /* padding: 0 20px; */
+}
+/*body {
+    background: #67B26F;*/ /* fallback for old browsers */
+    /*background: -webkit-linear-gradient(to right, #4ca2cd, #67B26F);*/ /* Chrome 10-25, Safari 5.1-6 */
+    /*background: linear-gradient(to right, #4ca2cd, #67B26F);*/ /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    /*padding: 0;
+    margin: 0;
+    font-family: 'Lato', sans-serif;
+    color: #000;
+}
+
+.student-profile .card {
+    border-radius: 10px;
+}
+
+    .student-profile .card .card-header .profile_img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        margin: 10px auto;
+        border: 10px solid #ccc;
+        border-radius: 50%;
+    }
+
+    .student-profile .card h3 {
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .student-profile .card p {
+        font-size: 16px;
+        color: #000;
+    }
+
+.student-profile .table th,
+.student-profile .table td {
+    font-size: 14px;
+    padding: 5px 10px;
+    color: #000;
+}*/

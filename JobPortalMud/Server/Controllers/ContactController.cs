@@ -25,6 +25,22 @@ namespace JobPortalMud.Server.Controllers
             return Ok(contacts);
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Contact>> Getcontact(int id)
+        {
+            try
+            {
+                using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
+                var job = await connection.QueryFirstAsync<Contact>("select * from Contact where id=@id",
+                    new { id = id });
+                return Ok(job);
+            }
+            catch
+            {
+                return BadRequest("contact details not found...");
+            }
+        }
+
         [HttpPost]
         public async Task<ActionResult<List<Contact>>> CreateContact(Contact contact)
         {

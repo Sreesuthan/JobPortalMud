@@ -1,26 +1,45 @@
 ﻿@page "/contactus"
-@using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
-@attribute [Authorize]
 @inject IContactService ContactService
+@inject MudBlazor.ISnackbar snackBar
 
-<h3>Contact Us</h3>
 
-<EditForm Model="contact" OnValidSubmit="HandleSubmit" class="col-lg-6 mb-5 mb-lg-0">
-    <DataAnnotationsValidator />
-    <MudCard>
-        <MudCardContent>
-            <MudTextField Label="First Name" @bind-Value="contact.FirstName" Class="col-lg-6 mb-5 mb-lg-0" For="@(()=>contact.FirstName)"></MudTextField>
-                <MudTextField Label="Last Name" @bind-Value="contact.LastName" Class="col-lg-6" For="@(()=>contact.LastName)"></MudTextField>
-                <MudTextField Label="Email" @bind-Value="contact.Email" For="@(()=>contact.Email)"></MudTextField>
-                <MudTextField Label="Subject" @bind-Value="contact.Subject" For="@(()=>contact.Subject)"></MudTextField>
-            <MudTextField Label="Message" @bind-Value="contact.Message" Lines="10" For="@(()=>contact.Message)"></MudTextField>
-        </MudCardContent>
-    </MudCard>
+<MudGrid Style="background-image: url('Images/apply.jpg');" Class="rounded-lg">
+    <MudItem xs="7">
+        <MudText Typo="Typo.h4" Align="Align.Start" GutterBottom="true"><b>Contact Us</b></MudText>
+        <a href="/">Home</a> <span class="mx-2 slash">/</span>
+        <span class="text-black"><b>Contact Us</b></span>
+    </MudItem>
+</MudGrid>
+<br />
+<MudGrid Class="mt-8 mb-10">
+    <MudItem xs="6">
+        <EditForm Model="contact" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+            <MudCard>
+                <MudCardContent>
+                    <MudTextField Label="First Name" @bind-Value="contact.FirstName" Class="col-lg-6 mb-5 mb-lg-0" For="@(()=>contact.FirstName)"></MudTextField>
+                    <MudTextField Label="Last Name" @bind-Value="contact.LastName" Class="col-lg-6" For="@(()=>contact.LastName)"></MudTextField>
+                    <MudTextField Label="Email" @bind-Value="contact.Email" For="@(()=>contact.Email)"></MudTextField>
+                    <MudTextField Label="Subject" @bind-Value="contact.Subject" For="@(()=>contact.Subject)"></MudTextField>
+                    <MudTextField Label="Message" @bind-Value="contact.Message" Lines="10" For="@(()=>contact.Message)"></MudTextField>
+                </MudCardContent>
+            </MudCard>
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Info" Class="mr-4 mt-4">Submit</MudButton>
+        </EditForm>
+    </MudItem>
+    <MudItem xs="6">
+        <br />
+        <br />
+        <br />
+        <MudText Typo="Typo.subtitle1"><b>Address</b></MudText>
+        <MudText Typo="Typo.body1">203 Fake St. Mountain View, San Francisco, California, USA</MudText>
+        <MudText Typo="Typo.subtitle1"><b>Phone</b></MudText>
+        <MudText Typo="Typo.body1">+1 232 3235 324</MudText>
+        <MudText Typo="Typo.subtitle1"><b>Email Address</b></MudText>
+        <MudText Typo="Typo.body1">youremail@domain.com</MudText>
+    </MudItem>
+</MudGrid>
 
-    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="mr-4 mt-4">Submit</MudButton>
-
-</EditForm>
 
 @code {
     JobPortalMud.Shared.Contact contact = new JobPortalMud.Shared.Contact();
@@ -28,5 +47,6 @@
     async Task HandleSubmit()
     {
         await ContactService.CreateContact(contact);
+        snackBar.Add("Message Sent Successfully", Severity.Success);
     }
 }

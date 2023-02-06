@@ -1,0 +1,35 @@
+﻿@page
+@model LogoutModel
+@{
+    ViewData["Title"] = "Log out";
+}
+
+<section class="site-section">
+    
+</section>
+
+
+<section class="site-section">
+    @{
+        if (User.Identity.IsAuthenticated)
+        {
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-6">
+                        <form method="post" class="border rounded-3">
+                            <h3 class="mb-4 m-lg-3">Are you want to logout?</h3>
+                            <div class="form-floating m-lg-3 mb-3">
+                                <input type="submit" value="Yes" asp-page-handler="Logout" class="btn px-4 btn-sm btn-primary text-white">
+                                <input type="submit" value="No" asp-page-handler="DontLogout" class="btn px-4 btn-sm btn-outline-secondary border-width-2 text-black">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <p>You have successfully logged out of the application.</p>
+        }
+    }
+</section>

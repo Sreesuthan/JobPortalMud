@@ -1,0 +1,64 @@
+﻿@page "/category/{username}"
+@inject HttpClient Http
+@inject NavigationManager navigationManager
+<MudGrid Style="background-image: url('Images/apply.jpg');" Class="rounded-lg">
+    <MudItem xs="7">
+    <MudText Typo="Typo.h4" Class="mt-8" Align="Align.Start" GutterBottom="true"><b>Entertainment Jobs</b></MudText>
+        <a href="/">Home</a> <span class="mx-2 slash">/</span>
+        <span class="text-black"><b>Job Category</b></span>
+    </MudItem>
+</MudGrid>
+
+<MudGrid Class="mt-8 mb-10" Justify="Justify.Center">
+    <MudItem xs="3">
+        <MudPaper  MaxHeight="700px" MaxWidth="100%" Outlined="true">
+            @foreach(var category in categories.Take(7))
+            {
+                <MudList Clickable="true" Dense="true">
+                    <MudListItem Text="@category.Category" OnClick="()=>FindJob(category.Id, UserName)" Icon="@Icons.Material.Filled.Send" IconSize="Size.Small" />
+                </MudList>
+            }
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="3">
+        <MudPaper  MaxHeight="700px" MaxWidth="100%" Outlined="true">
+            @foreach (var category in categories.Skip(7).Take(7).ToList())
+            {
+                <MudList Clickable="true" Dense="true">
+                    <MudListItem Text="@category.Category" OnClick="()=>FindJob(category.Id, UserName)" Icon="@Icons.Material.Filled.Send" IconSize="Size.Small"/>
+                </MudList>
+            }
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="3">
+        <MudPaper MaxHeight="700px" MaxWidth="100%" Outlined="true">
+            @foreach (var category in categories.TakeLast(6))
+            {
+                <MudList Clickable="true" Dense="true">
+                    <MudListItem Text="@category.Category" OnClick="()=>FindJob(category.Id, UserName)" Icon="@Icons.Material.Filled.Send" IconSize="Size.Small" />
+                </MudList>
+            }
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+
+
+@code {
+    [Parameter]
+    public string? UserName { get; set; }
+    public List<Categories> categories = new List<Categories>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await Http.GetFromJsonAsync<List<Categories>>("api/JobList/categories");
+        if (result != null)
+        {
+            categories = result;
+        }
+    }
+    void FindJob(int id, string user)
+    {
+        navigationManager.NavigateTo($"findjob/{id}/{user}");
+    }
+}

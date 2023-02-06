@@ -1,14 +1,103 @@
-﻿<MudNavMenu>
-    <MudNavLink Href="/" Match="NavLinkMatch.All">Dashboard</MudNavLink>
-    <MudNavLink Href="/userlist" Match="NavLinkMatch.Prefix">User List</MudNavLink>
-    <MudNavGroup Title="Job" Expanded="true">
-        <MudNavLink Href="/joblist" Match="NavLinkMatch.Prefix">Job List</MudNavLink>
-        <MudNavLink Href="/fetchdata" Match="NavLinkMatch.Prefix">Job Applications</MudNavLink>
-        <MudNavLink Href="/postjob" Match="NavLinkMatch.Prefix">Post Job</MudNavLink>
-    </MudNavGroup>
-    <MudNavGroup Title="Contact" Expanded="true">
-        <MudNavLink Href="/contactus" Match="NavLinkMatch.Prefix">Contact Us</MudNavLink>
-        <MudNavLink Href="/contactlist" Match="NavLinkMatch.Prefix">Contact List</MudNavLink>
-    </MudNavGroup>
-    <MudNavLink Href="/about" Match="NavLinkMatch.Prefix">About</MudNavLink>
+﻿@inject NavigationManager navigationManager
+@inject HttpClient Http
+@inject AuthenticationStateProvider Auth
+
+<MudNavMenu Class="mt-16"> 
+    <AuthorizeView>
+        <Authorized>
+            @if (role.UserName.Length > 0 && role.Name == "Admin")
+            {
+                <MudNavLink Href="/" Icon="@Icons.Material.Filled.Store" Match="NavLinkMatch.All">Home</MudNavLink>
+                <MudNavLink Href="/userlist" Icon="@Icons.Material.Filled.People" Match="NavLinkMatch.All">Registered Users</MudNavLink>
+                <MudNavLink Href="/contactlist" Icon="@Icons.Material.Filled.QuestionAnswer" Match="NavLinkMatch.All">Complaints and Queries</MudNavLink>
+                <MudNavLink OnClick="() => JobCategory(context.User.Identity.Name)" Icon="@Icons.Material.Filled.Search" Match="NavLinkMatch.All">Find Job</MudNavLink>
+                <MudNavLink OnClick="() => JobList(context.User.Identity.Name)" Icon="@Icons.Material.Filled.List" Match="NavLinkMatch.All">Posted Jobs</MudNavLink>
+                <MudNavLink OnClick="() => AppliedJobList(context.User.Identity.Name)" Icon="@Icons.Material.Filled.GetApp" Match="NavLinkMatch.All">Job Applications</MudNavLink>
+                <MudNavLink OnClick="() => PostJob(context.User.Identity.Name)" Icon="@Icons.Material.Filled.PostAdd" Match="NavLinkMatch.All">Post a Job</MudNavLink>
+                <MudNavLink Href="/contactus" Icon="@Icons.Material.Filled.Call" Match="NavLinkMatch.All">Contact Us</MudNavLink>
+                <MudNavLink Href="/about" Icon="@Icons.Material.Filled.Info" Match="NavLinkMatch.All">About Us</MudNavLink>
+            }
+            
+            @if (role.UserName.Length > 0 && role.Name == "Employer")
+            {
+                <MudNavLink Href="/" Icon="@Icons.Material.Filled.Store" Match="NavLinkMatch.All">Home</MudNavLink>
+                <MudNavLink OnClick="() => JobList(context.User.Identity.Name)" Icon="@Icons.Material.Filled.List" Match="NavLinkMatch.All">Posted Jobs</MudNavLink>
+                <MudNavLink OnClick="() => AppliedJobList(context.User.Identity.Name)" Icon="@Icons.Material.Filled.GetApp" Match="NavLinkMatch.All">Job Applications</MudNavLink>
+                <MudNavLink OnClick="() => PostJob(context.User.Identity.Name)" Icon="@Icons.Material.Filled.PostAdd" Match="NavLinkMatch.All">Post a Job</MudNavLink>
+                <MudNavLink Href="/contactus" Icon="@Icons.Material.Filled.Call" Match="NavLinkMatch.All">Contact Us</MudNavLink>
+                <MudNavLink Href="/about" Icon="@Icons.Material.Filled.Info" Match="NavLinkMatch.All">About Us</MudNavLink>
+            }
+            @if (role.UserName.Length > 0 && (role.Name == "Job Seeker" || role.LoginProvider == "Google"))
+            {
+                <MudNavLink Href="/" Icon="@Icons.Material.Filled.Store"Match="NavLinkMatch.All">Home</MudNavLink>
+                <MudNavLink OnClick="() => JobCategory(context.User.Identity.Name)" Icon="@Icons.Material.Filled.Search" Match="NavLinkMatch.All">Find Job</MudNavLink>
+                <MudNavLink OnClick="() => Favorites(context.User.Identity.Name)" Icon="@Icons.Material.Filled.Favorite" Match="NavLinkMatch.All">Favourites</MudNavLink>
+                <MudNavLink OnClick="() => MyJobs(context.User.Identity.Name)" Icon="@Icons.Material.Filled.Work" Match="NavLinkMatch.All">My Jobs</MudNavLink>
+                <MudNavLink Href="/contactus" Icon="@Icons.Material.Filled.Call" Match="NavLinkMatch.All">Contact Us</MudNavLink>
+                <MudNavLink Href="/about" Icon="@Icons.Material.Filled.Info" Match="NavLinkMatch.All">About</MudNavLink>
+            }
+        </Authorized>
+        <NotAuthorized>
+            <MudNavLink Href="/" Icon="@Icons.Material.Filled.Store" Match="NavLinkMatch.All">Home</MudNavLink>
+            <MudNavLink Href="/contactus" Icon="@Icons.Material.Filled.Call" Match="NavLinkMatch.All">Contact Us</MudNavLink>
+            <MudNavLink Href="/about" Icon="@Icons.Material.Filled.Info" Match="NavLinkMatch.All">About</MudNavLink>
+        </NotAuthorized>
+    </AuthorizeView>
 </MudNavMenu>
+
+
+@code{
+    Role role = new Role();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var userDetails = (await Auth.GetAuthenticationStateAsync()).User.Identity;
+        if(userDetails != null && userDetails.IsAuthenticated)
+        {
+            var user = userDetails.Name;
+            if (user.Contains("@gmail.com"))
+            {
+                var result = await Http.GetFromJsonAsync<Role>($"api/User/external/{user}");
+                if (result != null)
+                {
+                    role = result;
+                }
+            }
+            else
+            {
+                var result = await Http.GetFromJsonAsync<Role>($"api/User/role/{user}");
+                if (result != null)
+                {
+                    role = result;
+                }
+            }
+        }
+    }
+
+    void JobCategory(string username)
+    {
+        navigationManager.NavigateTo($"category/{username}");
+    }
+    void JobList(string username)
+    {
+        navigationManager.NavigateTo($"joblist/{username}");
+    }
+    void AppliedJobList(string username)
+    {
+        navigationManager.NavigateTo($"appliedjoblist/{username}");
+    }
+    void PostJob(string username)
+    {
+        navigationManager.NavigateTo($"postjob/{username}");
+    }
+    void Favorites(string username)
+    {
+        navigationManager.NavigateTo($"favorites/{username}");
+    }
+    void MyJobs(string username)
+    {
+        navigationManager.NavigateTo($"myjobs/{username}");
+    }
+}
+
+
