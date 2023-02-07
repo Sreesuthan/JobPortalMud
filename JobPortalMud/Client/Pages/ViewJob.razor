@@ -18,7 +18,7 @@
     </MudItem>
 </MudGrid>
 <br />
-<MudGrid Class="border rounded mt-8">
+<MudGrid Justify="Justify.Center" Class="border rounded mt-8">
         <MudItem xs="2" Class="text-center">
         @{
             if (job.CompanyImage.Length > 0)
@@ -36,23 +36,23 @@
             <MudText Typo="Typo.h5" Style="margin:15px"><b>@job.Title</b></MudText>
             <MudText Typo="Typo.subtitle1"><MudIcon Icon="@Icons.Material.Filled.Monitor" Size="Size.Small" />&nbsp;@job.CompanyName&nbsp;&nbsp;&nbsp;<MudIcon Icon="@Icons.Material.Filled.LocationOn" Size="Size.Small" />&nbsp;@job.Address, @job.State, @job.Country&nbsp;&nbsp;&nbsp;<MudIcon Icon="@Icons.Material.Filled.Timer" Size="Size.Small" />&nbsp;@job.JobType</MudText>
         </MudItem>
-        <MudItem xs="2" Class="text-center">
+        <MudItem xs="1" Class="text-center">
             <br />
         @{
             if (appliedJobs.Count == 0)
             {
                 if (bookmarkedJobs.Count > 0)
                 {
-                    <MudButton Variant="Variant.Outlined" Color="Color.Info" Class="mr-4 mt-4"><MudIcon Icon="@Icons.Material.Filled.Favorite" />&nbsp;Added</MudButton>
+                    <MudIconButton Icon="@Icons.Material.Filled.Favorite" Variant="Variant.Outlined" Class="mr-4 mt-4" Color="Color.Secondary"/>
                 }
                 else
                 {
-                    <MudButton Variant="Variant.Outlined" Color="Color.Info" OnClick="() => AddBookmark(job.JobId, user)" Class="mr-4 mt-4"><MudIcon Icon="@Icons.Material.Outlined.FavoriteBorder" />&nbsp;Favourite</MudButton>
+                    <MudIconButton Icon="@Icons.Material.Outlined.FavoriteBorder" Variant="Variant.Outlined" Class="mr-4 mt-4" OnClick="() => AddBookmark(job.JobId, user)" Color="Color.Secondary" />
                 }
             }
             else
             {
-                <MudButton Variant="Variant.Outlined" Color="Color.Info" Class="mr-4 mt-4" Disabled><MudIcon Icon="@Icons.Material.Filled.Favorite" />&nbsp;Favourite</MudButton>
+                <MudIconButton Icon="@Icons.Material.Filled.Favorite" Variant="Variant.Outlined" Class="mr-4 mt-4" Color="Color.Secondary" />
             }
         }
     </MudItem>
@@ -62,6 +62,19 @@
     </MudItem>
 </MudGrid>
 <br />
+<MudGrid Justify="Justify.Center" Class="border rounded">
+<MudItem xs="10">
+            <MudCard>
+                <MudText Typo="Typo.h5" Style="margin:15px"><MudIcon Icon="@Icons.Material.Filled.Description" /><b>Job Description</b></MudText>
+                <MudText Typo="Typo.body1" Style="margin:15px">@job.Description</MudText>
+                <br />
+                <MudText Typo="Typo.h5" Style="margin:15px"><MudIcon Icon="@Icons.Material.Filled.Book" /><b>Experience and Specialization</b></MudText>
+                <MudList Dense="true">
+                    <MudListItem Text="@job.Experience" Icon="@Icons.Material.Filled.Send" IconSize="Size.Small" />
+                    <MudListItem Text="@job.Specialization" Icon="@Icons.Material.Filled.Send" IconSize="Size.Small" />
+                </MudList>
+                <br />
+            </MudCard>
 <MudCard>
     <MudText Typo="Typo.h5" Style="margin:15px"><b>Job Summary</b></MudText>
     <MudSimpleTable Striped="true" Bordered="true" Outlined="true" Dense="false" Hover="true" Class="card-body pt-0">
@@ -69,7 +82,15 @@
         <tr>
             <th width="30%">Published On</th>
             <td width="2%">:</td>
-            <td>@job.CreateDate</td>
+                        @{
+                        if (job.CreateDate.ToString().Length > 0)
+                        {
+                            var date = job.CreateDate.ToString();
+                            string[] strings = date.ToString().Split(' ');
+                            ValidCreateDate = strings[0];
+                        }
+                    }
+                    <td>@ValidCreateDate</td>
         </tr>
         <tr>
             <th width="30%">Vacancy</th>
@@ -77,7 +98,7 @@
             <td>@job.NoOfPost</td>
         </tr>
         <tr>
-            <th width="30%">Employment Status</th>
+            <th width="30%">Job Type</th>
             <td width="2%">:</td>
             <td>@job.JobType</td>
         </tr>
@@ -94,7 +115,15 @@
         <tr>
             <th width="30%">Application Deadline</th>
             <td width="2%">:</td>
-            <td>@job.LastDateToApply</td>
+                    @{
+                        if (job.LastDateToApply.ToString().Length > 0)
+                        {
+                            var date = @job.LastDateToApply.ToString();
+                            string[] strings = date.ToString().Split(' ');
+                            ValidLastDateToApply = strings[0];
+                        }
+                    }
+                    <td>@ValidLastDateToApply</td>
         </tr>
     </MudSimpleTable>
 </MudCard>
@@ -115,24 +144,15 @@
     </MudSimpleTable>
 </MudCard>
 <MudCard>
-    <MudText Typo="Typo.h5" Style="margin:15px"><MudIcon Icon="@Icons.Material.Filled.Description" /><b>Job Description</b></MudText>
-    <MudText Typo="Typo.body1" Style="margin:15px">@job.Description</MudText>
-    <br />
-    <MudText Typo="Typo.h5" Style="margin:15px"><MudIcon Icon="@Icons.Material.Filled.Book" /><b>Experience and Specialization</b></MudText>
-    <MudList Dense="true" >
-        <MudListItem Text="@job.Experience" Icon="@Icons.Material.Filled.StarBorder" />
-        <MudListItem Text="@job.Specialization" Icon="@Icons.Material.Filled.StarBorder" />
-    </MudList>
-    <br />
-</MudCard>
-<MudCard>
-    <MudText Typo="Typo.h5" Style="margin:15px"><b>General Information</b></MudText>
+    <MudText Typo="Typo.h5" Style="margin:15px"><b>Follow Us</b></MudText>
     <MudIconButton Icon="@Icons.Custom.Brands.Facebook" Color="Color.Info" aria-label="Facebook" />
     <MudIconButton Icon="@Icons.Custom.Brands.Twitter" Color="Color.Info" aria-label="Twitter"/>
     <MudIconButton Icon="@Icons.Custom.Brands.Pinterest" Color="Color.Info" aria-label="Pinterest" />
     <MudIconButton Icon="@Icons.Custom.Brands.LinkedIn" Color="Color.Info" aria-label="LinkedIn" />
     <br />
 </MudCard>
+</MudItem>
+</MudGrid>
 
 
     @code {
@@ -155,6 +175,8 @@
     public string Image = "";
     public bool Favorite { get; set; }
     public int DelId { get; set; }
+    public string ValidCreateDate = string.Empty;
+    public string ValidLastDateToApply = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {

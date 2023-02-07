@@ -20,7 +20,7 @@
 
 <EditForm Model="job" OnValidSubmit="HandleSubmit">
     <DataAnnotationsValidator />
-    <MudCard Class="mt-8 mb-10">
+    <MudCard Class="mt-8">
         <MudCardContent>
             <MudTextField Label="Job Title" @bind-Value="job.Title" For="@(()=>job.Title)"></MudTextField>
             <MudNumericField Label="No. of Post" @bind-Value="job.NoOfPost" For="@(()=>job.NoOfPost)" HelperText="Minimum Value is 1."></MudNumericField>

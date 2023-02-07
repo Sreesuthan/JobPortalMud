@@ -3,16 +3,49 @@
 @using System.Security.Claims
 
 @inject NavigationManager navigationManager
+@inject IUserService UserService
 @inject HttpClient Http
+@inject SignOutSessionStateManager SignOutManager
 @inject AuthenticationStateProvider Auth
 
 <AuthorizeView>
     <Authorized>
+        @if (role.UserName.Length > 0 && role.Name == "Admin")
+        {
+            <MudMenu Icon="@Icons.Material.Filled.Person" Size="Size.Large" Variant="Variant.Outlined" Color="Color.Inherit">
+                <ChildContent>
+                    <MudMenuItem>Signed in as<br />Admin</MudMenuItem>
+                    <MudDivider />
+                    <MudMenuItem><a style="text-decoration: none" href="Identity/Account/Logout">Logout</a></MudMenuItem>
+                </ChildContent>
+            </MudMenu>
+        }
+
+        @if (role.UserName.Length > 0 && role.Name == "Employer")
+        {
+            <MudMenu Icon="@Icons.Material.Filled.Person" Size="Size.Large" Variant="Variant.Outlined" Color="Color.Inherit">
+                <ChildContent>
+                    <MudMenuItem>Signed in as<br/>@context.User.Identity.Name</MudMenuItem>
+                    <MudDivider/>
+                    <MudMenuItem>Upload Photo</MudMenuItem>
+                    <MudDivider/>
+                    <MudMenuItem><a style="text-decoration: none" href="Identity/Account/Logout">Logout</a></MudMenuItem>
+                </ChildContent>
+            </MudMenu>
+        }
         @if (role.UserName.Length > 0  && (role.Name == "Job Seeker" || role.LoginProvider == "Google"))
         {
-            <MudButton Size="Size.Medium" Variant="Variant.Outlined" Color="Color.Inherit" OnClick="() => Profile(context.User.Identity.Name)" Class="mr-4 mt-4">Hello, @context.User.Identity?.Name</MudButton>
+            <MudMenu Icon="@Icons.Material.Filled.Person" Size="Size.Large" Variant="Variant.Outlined" Color="Color.Inherit">
+                <ChildContent>
+                    <MudMenuItem>Signed in as<br/>@UserName</MudMenuItem>
+                    <MudDivider/>
+                    <MudMenuItem OnClick="() => Profile(context.User.Identity.Name)">My Profile</MudMenuItem>
+                    <MudMenuItem OnClick="() => UploadPhoto(context.User.Identity.Name)">@(user1.ProfileImage.Length > 0 ? "Update Photo" : "Upload Photo")</MudMenuItem>
+                    <MudDivider/>
+                    <MudMenuItem><a style="text-decoration: none" href="Identity/Account/Logout">Logout</a></MudMenuItem>
+                </ChildContent>
+            </MudMenu>
         }
-        <MudButton Href="Identity/Account/Logout" Size="Size.Medium" Variant="Variant.Outlined" Color="Color.Inherit" Class="mr-4 mt-4">Logout</MudButton>
     </Authorized>
     <NotAuthorized>
         <MudButton Href="Identity/Account/Login" Size="Size.Medium" Variant="Variant.Outlined" Color="Color.Inherit" Class="mr-4 mt-4">Log in</MudButton>
@@ -23,6 +56,9 @@
 
 @code{
     Role role = new Role();
+    User user1 = new User();
+    public string Image = "";
+    public string UserName = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -30,6 +66,8 @@
         if (userDetails != null && userDetails.IsAuthenticated)
         {
             var user = userDetails.Name; 
+            string[] strings = user.ToString().Split('@');
+            UserName = strings[0];
             if (user.Contains("@gmail.com"))
             {
                 var result = await Http.GetFromJsonAsync<Role>($"api/User/external/{user}");
@@ -46,11 +84,20 @@
                     role = result;
                 }
             }
+            if (user != null)
+            {
+                user1 = await UserService.GetSingleUser(user);
+            }
         }
     }
 
     void Profile(string username)
     {
         navigationManager.NavigateTo($"profile/{username}");
+    }
+
+    void UploadPhoto(string username)
+    {
+        navigationManager.NavigateTo($"uploadphoto/{username}");
     }
 }

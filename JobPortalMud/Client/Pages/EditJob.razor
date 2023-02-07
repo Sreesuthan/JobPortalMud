@@ -22,7 +22,7 @@
 
 <EditForm Model="job" OnValidSubmit="HandleSubmit">
     <DataAnnotationsValidator />
-    <MudCard Class="mt-8 mb-10">
+    <MudCard Class="mt-8">
         <MudCardContent>
             <MudSwitch Label="Active" @bind-Checked="job.Active" Color="Color.Primary"></MudSwitch>
             <MudTextField Label="Job Title" @bind-Value="job.Title" For="@(()=>job.Title)"></MudTextField>

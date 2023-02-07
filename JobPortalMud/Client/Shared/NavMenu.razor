@@ -7,40 +7,40 @@
         <Authorized>
             @if (role.UserName.Length > 0 && role.Name == "Admin")
             {
-                <MudNavLink Href="/" Icon="@Icons.Material.Filled.Store" Match="NavLinkMatch.All">Home</MudNavLink>
-                <MudNavLink Href="/userlist" Icon="@Icons.Material.Filled.People" Match="NavLinkMatch.All">Registered Users</MudNavLink>
-                <MudNavLink Href="/contactlist" Icon="@Icons.Material.Filled.QuestionAnswer" Match="NavLinkMatch.All">Complaints and Queries</MudNavLink>
-                <MudNavLink OnClick="() => JobCategory(context.User.Identity.Name)" Icon="@Icons.Material.Filled.Search" Match="NavLinkMatch.All">Find Job</MudNavLink>
-                <MudNavLink OnClick="() => JobList(context.User.Identity.Name)" Icon="@Icons.Material.Filled.List" Match="NavLinkMatch.All">Posted Jobs</MudNavLink>
-                <MudNavLink OnClick="() => AppliedJobList(context.User.Identity.Name)" Icon="@Icons.Material.Filled.GetApp" Match="NavLinkMatch.All">Job Applications</MudNavLink>
-                <MudNavLink OnClick="() => PostJob(context.User.Identity.Name)" Icon="@Icons.Material.Filled.PostAdd" Match="NavLinkMatch.All">Post a Job</MudNavLink>
-                <MudNavLink Href="/contactus" Icon="@Icons.Material.Filled.Call" Match="NavLinkMatch.All">Contact Us</MudNavLink>
-                <MudNavLink Href="/about" Icon="@Icons.Material.Filled.Info" Match="NavLinkMatch.All">About Us</MudNavLink>
+                <MudNavLink Href="/" Icon="@Icons.Material.Filled.Store" IconColor="Color.Inherit" Match="NavLinkMatch.All">Home</MudNavLink>
+                <MudNavLink Href="/userlist" Icon="@Icons.Material.Filled.People" IconColor="Color.Inherit" Match="NavLinkMatch.All">Registered Users</MudNavLink>
+                <MudNavLink Href="/contactlist" Icon="@Icons.Material.Filled.QuestionAnswer" IconColor="Color.Inherit" Match="NavLinkMatch.All">Complaints and Queries</MudNavLink>
+                <MudNavLink OnClick="() => JobCategory(context.User.Identity.Name)" IconColor="Color.Inherit" Icon="@Icons.Material.Filled.Search" Match="NavLinkMatch.All">Find Job</MudNavLink>
+                <MudNavLink OnClick="() => JobList(context.User.Identity.Name)" Icon="@Icons.Material.Filled.List" IconColor="Color.Inherit" Match="NavLinkMatch.All">Posted Jobs</MudNavLink>
+                <MudNavLink OnClick="() => AppliedJobList(context.User.Identity.Name)" Icon="@Icons.Material.Filled.GetApp" IconColor="Color.Inherit" Match="NavLinkMatch.All">Job Applied Candidates</MudNavLink>
+                <MudNavLink OnClick="() => PostJob(context.User.Identity.Name)" Icon="@Icons.Material.Filled.PostAdd" IconColor="Color.Inherit" Match="NavLinkMatch.All">Post a New Job</MudNavLink>
+                <MudNavLink Href="/contactus" Icon="@Icons.Material.Filled.Call" IconColor="Color.Inherit" Match="NavLinkMatch.All">Contact Us</MudNavLink>
+                <MudNavLink Href="/about" Icon="@Icons.Material.Filled.Info" IconColor="Color.Inherit" Match="NavLinkMatch.All">About Us</MudNavLink>
             }
             
             @if (role.UserName.Length > 0 && role.Name == "Employer")
             {
-                <MudNavLink Href="/" Icon="@Icons.Material.Filled.Store" Match="NavLinkMatch.All">Home</MudNavLink>
-                <MudNavLink OnClick="() => JobList(context.User.Identity.Name)" Icon="@Icons.Material.Filled.List" Match="NavLinkMatch.All">Posted Jobs</MudNavLink>
-                <MudNavLink OnClick="() => AppliedJobList(context.User.Identity.Name)" Icon="@Icons.Material.Filled.GetApp" Match="NavLinkMatch.All">Job Applications</MudNavLink>
-                <MudNavLink OnClick="() => PostJob(context.User.Identity.Name)" Icon="@Icons.Material.Filled.PostAdd" Match="NavLinkMatch.All">Post a Job</MudNavLink>
-                <MudNavLink Href="/contactus" Icon="@Icons.Material.Filled.Call" Match="NavLinkMatch.All">Contact Us</MudNavLink>
-                <MudNavLink Href="/about" Icon="@Icons.Material.Filled.Info" Match="NavLinkMatch.All">About Us</MudNavLink>
+                <MudNavLink Href="/" Icon="@Icons.Material.Filled.Store" IconColor="Color.Inherit" Match="NavLinkMatch.All">Home</MudNavLink>
+                <MudNavLink OnClick="() => JobList(context.User.Identity.Name)" IconColor="Color.Inherit" Icon="@Icons.Material.Filled.List" Match="NavLinkMatch.All">Posted Jobs</MudNavLink>
+                <MudNavLink OnClick="() => AppliedJobList(context.User.Identity.Name)" IconColor="Color.Inherit" Icon="@Icons.Material.Filled.GetApp" Match="NavLinkMatch.All">Job Applied Candidates</MudNavLink>
+                <MudNavLink OnClick="() => PostJob(context.User.Identity.Name)" IconColor="Color.Inherit" Icon="@Icons.Material.Filled.PostAdd" Match="NavLinkMatch.All">Post a New Job</MudNavLink>
+                <MudNavLink Href="/contactus" Icon="@Icons.Material.Filled.Call" IconColor="Color.Inherit" Match="NavLinkMatch.All">Contact Us</MudNavLink>
+                <MudNavLink Href="/about" Icon="@Icons.Material.Filled.Info"  IconColor="Color.Inherit" Match="NavLinkMatch.All">About Us</MudNavLink>
             }
             @if (role.UserName.Length > 0 && (role.Name == "Job Seeker" || role.LoginProvider == "Google"))
             {
-                <MudNavLink Href="/" Icon="@Icons.Material.Filled.Store"Match="NavLinkMatch.All">Home</MudNavLink>
-                <MudNavLink OnClick="() => JobCategory(context.User.Identity.Name)" Icon="@Icons.Material.Filled.Search" Match="NavLinkMatch.All">Find Job</MudNavLink>
-                <MudNavLink OnClick="() => Favorites(context.User.Identity.Name)" Icon="@Icons.Material.Filled.Favorite" Match="NavLinkMatch.All">Favourites</MudNavLink>
-                <MudNavLink OnClick="() => MyJobs(context.User.Identity.Name)" Icon="@Icons.Material.Filled.Work" Match="NavLinkMatch.All">My Jobs</MudNavLink>
-                <MudNavLink Href="/contactus" Icon="@Icons.Material.Filled.Call" Match="NavLinkMatch.All">Contact Us</MudNavLink>
-                <MudNavLink Href="/about" Icon="@Icons.Material.Filled.Info" Match="NavLinkMatch.All">About</MudNavLink>
+                <MudNavLink Href="/" Icon="@Icons.Material.Filled.Store" IconColor="Color.Inherit" Match="NavLinkMatch.All">Home</MudNavLink>
+                <MudNavLink OnClick="() => JobCategory(context.User.Identity.Name)" Icon="@Icons.Material.Filled.Search" IconColor="Color.Inherit" Match="NavLinkMatch.All">Find Job</MudNavLink>
+                <MudNavLink OnClick="() => Favorites(context.User.Identity.Name)" Icon="@Icons.Material.Filled.Favorite" IconColor="Color.Inherit" Match="NavLinkMatch.All">Favourites</MudNavLink>
+                <MudNavLink OnClick="() => MyJobs(context.User.Identity.Name)" Icon="@Icons.Material.Filled.Work" IconColor="Color.Inherit" Match="NavLinkMatch.All">My Jobs</MudNavLink>
+                <MudNavLink Href="/contactus" Icon="@Icons.Material.Filled.Call" IconColor="Color.Inherit" Match="NavLinkMatch.All">Contact Us</MudNavLink>
+                <MudNavLink Href="/about" Icon="@Icons.Material.Filled.Info" IconColor="Color.Inherit" Match="NavLinkMatch.All">About</MudNavLink>
             }
         </Authorized>
         <NotAuthorized>
-            <MudNavLink Href="/" Icon="@Icons.Material.Filled.Store" Match="NavLinkMatch.All">Home</MudNavLink>
-            <MudNavLink Href="/contactus" Icon="@Icons.Material.Filled.Call" Match="NavLinkMatch.All">Contact Us</MudNavLink>
-            <MudNavLink Href="/about" Icon="@Icons.Material.Filled.Info" Match="NavLinkMatch.All">About</MudNavLink>
+            <MudNavLink Href="/" Icon="@Icons.Material.Filled.Store" IconColor="Color.Inherit" Match="NavLinkMatch.All">Home</MudNavLink>
+            <MudNavLink Href="/contactus" Icon="@Icons.Material.Filled.Call" IconColor="Color.Inherit" Match="NavLinkMatch.All">Contact Us</MudNavLink>
+            <MudNavLink Href="/about" Icon="@Icons.Material.Filled.Info" IconColor="Color.Inherit" Match="NavLinkMatch.All">About</MudNavLink>
         </NotAuthorized>
     </AuthorizeView>
 </MudNavMenu>

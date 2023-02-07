@@ -12,9 +12,5 @@ namespace JobPortalMud.Shared
         public int PageSize { get; set; }
         public int CurrentPage { get; set; }
         public int TotalPages { get; set; }
-        [Required]
-        public string? SearchTitle { get; set; }
-        [Required]
-        public string? SearchCountry { get; set; }
     }
 }

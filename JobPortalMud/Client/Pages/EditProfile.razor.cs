@@ -54,8 +54,6 @@ namespace JobPortalMud.Client.Pages
 
         async Task HandleSubmit()
         {
-            if (user.ProfileImage.Length > 0)
-            {
                 var fileUpload = fileUploads.SingleOrDefault(f => f.OriginalFileName == filename);
                 if (fileUpload != null)
                 {
@@ -68,54 +66,13 @@ namespace JobPortalMud.Client.Pages
                 if (user.Resume.Length > 0)
                 {
                     await UserService.UpdateUser(user, UserName);
+                    navigation.NavigateTo($"profile/{UserName}");
                     snackBar.Add("Profile Updated Successfully", Severity.Success);
                 }
                 else
                 {
                     snackBar.Add("Please select Resume...", Severity.Warning);
                 }
-            }
-            else
-            {
-                snackBar.Add("Please select profile picture...", Severity.Warning);
-            }
-        }
-
-        async Task OnFileChangeImg(InputFileChangeEventArgs e)
-        {
-            if (IsValidExtensionImg(e.File))
-            {
-                var format = e.File.ContentType;
-                var resizedImage = await e.File.RequestImageFileAsync(format, 200, 200);
-                var buffer = new byte[resizedImage.Size];
-                await resizedImage.OpenReadStream().ReadAsync(buffer);
-                var imageData = $"data:{format};base64,{Convert.ToBase64String(buffer)}";
-                user.ProfileImage = imageData;
-            }
-            else
-            {
-                snackBar.Add("Please select .jpg, .jpeg, .png files only...", Severity.Warning);
-            }
-        }
-
-        bool IsValidExtensionImg(IBrowserFile file1)
-        {
-            bool isValid = false;
-            string[] fileExtension = {".jpg", ".jpeg", ".png"};
-            for (int i = 0; i <= fileExtension.Length - 1; i++)
-            {
-                if (file1.Name.Contains(fileExtension[i]))
-                {
-                    isValid = true;
-                    break;
-                }
-                else
-                {
-                    isValid = false;
-                }
-            }
-
-            return isValid;
         }
 
         private async Task OnFileChangeDoc(InputFileChangeEventArgs e)

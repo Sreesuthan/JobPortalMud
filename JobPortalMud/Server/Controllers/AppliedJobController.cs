@@ -21,7 +21,7 @@ namespace JobPortalMud.Server.Controllers
         public async Task<ActionResult<List<AppliedJob>>> GetUserAllAppliedJobs(string user)
         {
             using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
-            IEnumerable<AppliedJob> appliedJobs = await connection.QueryAsync<AppliedJob>("Select bj.Id, j.CompanyName, bj.JobId, j.Title, bj.UserName, j.JobType, j.CompanyName, j.Address, j.country, State from AppliedJobs as bj inner join AspNetUsers as u on bj.UserName = u.UserName inner join jobs as j on bj.JobId = j.JobId where u.UserName=@UserName", new { UserName = user });
+            IEnumerable<AppliedJob> appliedJobs = await connection.QueryAsync<AppliedJob>("Select aj.Id, j.CompanyName, aj.JobId, j.Title, aj.UserName, j.JobType, j.CompanyName, j.Address, j.country, State from AppliedJobs as aj inner join AspNetUsers as u on aj.UserName = u.UserName inner join jobs as j on aj.JobId = j.JobId where u.UserName=@UserName order by aj.Id desc", new { UserName = user });
             return Ok(appliedJobs);
         }
 
@@ -29,7 +29,7 @@ namespace JobPortalMud.Server.Controllers
         public async Task<ActionResult<List<AppliedJob>>> GetAllAppliedJobs(string user)
         {
             using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
-            IEnumerable<AppliedJob> appliedJobs = await connection.QueryAsync<AppliedJob>("Select Row_Number() over(order by (select 1)) as [SrNo], aj.Id, j.CompanyName, aj.JobId, j.Employer, j.Title, u.mobile, u.Name,u.Email, aj.UserName from AppliedJobs as aj inner join AspNetUsers as u on aj.UserName = u.UserName inner join jobs as j on aj.JobId = j.JobId where j.Employer=@Employer", new { Employer = user });
+            IEnumerable<AppliedJob> appliedJobs = await connection.QueryAsync<AppliedJob>("Select Row_Number() over(order by (select 1)) as [SrNo], aj.Id, j.CompanyName, aj.JobId, j.Employer, j.Title, u.mobile, u.Name,u.Email, aj.UserName from AppliedJobs as aj inner join AspNetUsers as u on aj.UserName = u.UserName inner join jobs as j on aj.JobId = j.JobId where j.Employer=@Employer order by aj.Id desc", new { Employer = user });
             return Ok(appliedJobs);
         }
 

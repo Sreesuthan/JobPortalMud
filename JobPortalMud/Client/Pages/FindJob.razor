@@ -16,17 +16,15 @@
 </MudGrid>
 <br />
 <MudGrid Spacing="2" Class="mt-8 mb-10" Justify="Justify.Center">
-    <EditForm Model="search" OnValidSubmit="HandleSubmit">
     <MudItem xs="5">
-        <MudTextField @bind-Value="search.SearchTitle" Label="What" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" HelperText="Enter Job Title" Required="true" RequiredError="Job Title is required!" Class="mt-8" />
+        <MudTextField @bind-Value="SearchTitle" Label="What" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" HelperText="Enter Job Title" Required="true" RequiredError="Job Title is required!" Class="mt-8" />
     </MudItem>
     <MudItem xs="5">
-        <MudTextField @bind-Value="search.SearchCountry" Label="Where" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.LocationOn" HelperText="Enter Country" Required="true" RequiredError="Country is required!" Class="mt-8" />
+        <MudTextField @bind-Value="SearchCountry" Label="Where" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.LocationOn" HelperText="Enter Country" Required="true" RequiredError="Country is required!" Class="mt-8" />
     </MudItem>
     <MudItem xs="2">
-        <MudButton ButtonType="ButtonType.Submit" Size="Size.Large" Color="Color.Info" Variant="Variant.Filled" Class="mt-9">Find Job</MudButton>
+        <MudButton OnClick="()=>SearchJob(SearchTitle, SearchCountry)" Size="Size.Large" Color="Color.Info" Variant="Variant.Filled" Class="mt-9">Find Job</MudButton>
     </MudItem>
-    </EditForm>
 </MudGrid>
 <MudGrid Class="mt-8" Justify="Justify.Center">
         <MudItem xs="10">
@@ -92,8 +90,9 @@
 
     [Parameter]
     public string? user { get; set; }
+    private string? SearchTitle { get; set; }
+    private string? SearchCountry { get; set; }
 
-    Paging search = new Paging();
     private int currentPage { get; set; }
     public string Image = "";
     public bool isNew = false;
@@ -127,10 +126,6 @@
         }
     }
 
-    async Task HandleSubmit()
-    {
-        await SearchJob(search.SearchTitle, search.SearchCountry);
-    }
 
     async Task SearchJob(string title, string country)
     {

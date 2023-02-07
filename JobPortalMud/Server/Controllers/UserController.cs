@@ -77,7 +77,7 @@ namespace JobPortalMud.Server.Controllers
 
         private static async Task<IEnumerable<User>> SelectAllUsers(SqlConnection connection)
         {
-            return await connection.QueryAsync<User>("select ROW_NUMBER() over(order by (select 1)) as [SrNo], Name, UserName, Email, mobile, Address from AspNetUsers");
+            return await connection.QueryAsync<User>("select ROW_NUMBER() over(order by (select 1)) as [SrNo], Name, UserName, Email, mobile, Address from AspNetUsers order by Id desc");
         }
     }
 }

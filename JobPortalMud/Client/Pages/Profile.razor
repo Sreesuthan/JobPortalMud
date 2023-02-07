@@ -24,7 +24,15 @@
         }
         <MudImage Src="@Image" Width="100" Height="100" Alt="Profile" Elevation="25" Class="rounded-lg ma-4" />
         <MudText Align="Align.Center" Typo="Typo.h6">@user.Name</MudText>
-        <MudText Align="Align.Center" Typo="Typo.subtitle2">@user.UserName</MudText>
+        @{
+            if (user.UserName.Length > 0)
+            {
+                var name = user.UserName;
+                string[] strings = name.ToString().Split('@');
+                ValidUser = strings[0];
+            }
+        }
+        <MudText Align="Align.Center" Typo="Typo.subtitle2">@ValidUser</MudText>
         <MudText Align="Align.Center" Typo="Typo.subtitle2">@user.Country</MudText>
             <br />
     </MudItem>
@@ -82,6 +90,7 @@
     public string? UserName { get; set; }
     User user = new User();
     public string Image = "";
+    public string ValidUser = "";
 
     protected override async Task OnParametersSetAsync()
     {

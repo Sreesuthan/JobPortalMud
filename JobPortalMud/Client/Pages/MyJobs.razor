@@ -14,12 +14,12 @@
 </MudGrid>
 <br />
 <MudGrid Class="mt-8" Justify="Justify.Center">
-        <MudItem xs="12">
+        <MudItem xs="10">
         @if (AppliedJobService.AppliedJobs.Count > 0)
             {
             @foreach (var job in AppliedJobService.AppliedJobs)
                 {
-                     <MudGrid>
+                <MudGrid Justify="Justify.Center">
                          <MudItem xs="2" Class="text-center" Style="background-color:lightgray">
                          @{
                             if (job.CompanyImage.Length > 0)
@@ -37,9 +37,9 @@
                              <MudText Typo="Typo.h5" Style="margin:15px"><b>@job.Title</b></MudText>
                              <MudText Typo="Typo.subtitle1"><MudIcon Icon="@Icons.Material.Filled.Monitor" Size="Size.Small" />&nbsp;@job.CompanyName&nbsp;&nbsp;&nbsp;<MudIcon Icon="@Icons.Material.Filled.LocationOn" Size="Size.Small" />&nbsp;@job.Address, @job.State, @job.Country&nbsp;&nbsp;&nbsp;<MudIcon Icon="@Icons.Material.Filled.Timer" Size="Size.Small" />&nbsp;@job.JobType</MudText>
                          </MudItem>
-                         <MudItem xs="4" Class="text-center" Style="background-color:lightgray">
+                         <MudItem xs="2" Class="text-center" Style="background-color:lightgray">
                             <br />
-                            <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="() => DeleteUserJob(job.Id, UserName)" Class="mr-4 mt-4" Style="align:center"><MudIcon Icon="@Icons.Material.Outlined.Delete" />&nbsp;Remove</MudButton>
+                            <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="() => ViewUserJob(job.JobId, UserName)" Class="mr-4 mt-4" Style="align:center">View</MudButton>
                          </MudItem>
                      </MudGrid>
                 }
@@ -75,16 +75,8 @@
         await AppliedJobService.GetSingleUserAppliedJob(UserName, currentPage);
     }
 
-    private async Task DeleteUserJob(int id, string user)
+    private async Task ViewUserJob(int id, string user)
     {
-        if (!await JS.InvokeAsync<bool>("confirm", "Are you sure you want to delete ?"))
-        {
-            return;
-        }
-        else
-        {
-            await AppliedJobService.DeleteUserAppliedJob(id, user);
-            snackBar.Add("Application Deleted Successfully", Severity.Success);
-        }
+        navigationManager.NavigateTo(($"viewjob/{id}/{user}"));
     }
 }

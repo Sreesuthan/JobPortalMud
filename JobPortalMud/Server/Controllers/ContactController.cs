@@ -60,7 +60,7 @@ namespace JobPortalMud.Server.Controllers
 
         private static async Task<IEnumerable<Contact>> SelectAllContacts(SqlConnection connection)
         {
-            return await connection.QueryAsync<Contact>("select ROW_NUMBER() over(order by (select 1)) as [SrNo], Id, FirstName, LastName, Email, Subject, Message from Contact");
+            return await connection.QueryAsync<Contact>("select ROW_NUMBER() over(order by (select 1)) as [SrNo], Id, FirstName, LastName, Email, Subject, Message from Contact order by Id desc");
         }
     }
 }

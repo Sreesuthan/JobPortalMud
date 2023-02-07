@@ -1,0 +1,98 @@
+﻿@page "/uploadphoto/{username}"
+@using System.Net.Http.Headers;
+@inject IUserService UserService
+@inject HttpClient Http
+@inject NavigationManager navigation
+@inject MudBlazor.ISnackbar snackBar
+
+
+
+<MudGrid Style="background-image: url('Images/apply.jpg');" Class="rounded-lg">
+    <MudItem xs="7">
+        <MudText Typo="Typo.h4" Align="Align.Start" GutterBottom="true"><b>Upload Photo</b></MudText>
+        <a href="/">Home</a> <span class="mx-2 slash">/</span>
+        <span class="text-black"><b>Upload Photo</b></span>
+    </MudItem>
+</MudGrid>
+<br />
+<MudGrid Justify="Justify.Center" Class="mt-4">
+    <MudItem Class="border rounded-lg" xs="7">
+        <EditForm Model="user" OnValidSubmit="HandleSubmit">
+            <MudCard Class="mt-4">
+                <MudCardContent>
+                    <MudText Typo="Typo.h4" Align="Align.Start" GutterBottom="true"><b>Upload Photo</b></MudText>
+                    <MudText Typo="Typo.subtitle1" Align="Align.Start">Please select a photo of yourself. We suggest a close-up of the face, of 200x200 pixels dimensions and .jpg, .jpeg, .png files only. Large photos will automatically get resized.</MudText>
+                    <InputFile id="fileInput1" OnChange="OnFileChangeImg" hidden />
+                    <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Material.Filled.CloudUpload" Class="mr-4 mt-4" for="fileInput1">Select Profile Picture</MudButton>
+                    <MudImage Src="@user.ProfileImage" Elevation="25" Class="rounded my-2"></MudImage>
+                    <br />
+                </MudCardContent>
+            </MudCard>
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Info" Class="mr-4 mt-4">Upload Photo</MudButton>
+        </EditForm>
+    </MudItem>
+</MudGrid>
+@code {
+    [Parameter]
+    public string? UserName { get; set; }
+
+    User user = new User();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (UserName != null)
+        {
+            user = await UserService.GetSingleUser(UserName);
+        }
+    }
+
+    async Task HandleSubmit()
+    {
+        if (user.ProfileImage.Length > 0)
+        {
+            await UserService.UpdateUser(user, UserName);
+            navigation.NavigateTo($"uploadphoto/{UserName}");
+            snackBar.Add("Profile Picture Uploaded Successfully", Severity.Success);
+        }
+        else
+        {
+            snackBar.Add("Please select profile picture...", Severity.Warning);
+        }
+    }
+
+    async Task OnFileChangeImg(InputFileChangeEventArgs e)
+    {
+        if (IsValidExtensionImg(e.File))
+        {
+            var format = e.File.ContentType;
+            var resizedImage = await e.File.RequestImageFileAsync(format, 200, 200);
+            var buffer = new byte[resizedImage.Size];
+            await resizedImage.OpenReadStream().ReadAsync(buffer);
+            var imageData = $"data:{format};base64,{Convert.ToBase64String(buffer)}";
+            user.ProfileImage = imageData;
+        }
+        else
+        {
+            snackBar.Add("Please select .jpg, .jpeg, .png files only...", Severity.Warning);
+        }
+    }
+
+    bool IsValidExtensionImg(IBrowserFile file1)
+    {
+        bool isValid = false;
+        string[] fileExtension = { ".jpg", ".jpeg", ".png" };
+        for (int i = 0; i <= fileExtension.Length - 1; i++)
+        {
+            if (file1.Name.Contains(fileExtension[i]))
+            {
+                isValid = true;
+                break;
+            }
+            else
+            {
+                isValid = false;
+            }
+        }
+        return isValid;
+    }
+}

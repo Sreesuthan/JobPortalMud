@@ -51,7 +51,6 @@ namespace JobPortalMud.Client.Services.UserService
             var result = await _http.PutAsJsonAsync("api/User", user);
             var response = await result.Content.ReadFromJsonAsync<List<User>>();
             users = response;
-            _navigationManager.NavigateTo($"profile/{username}");
         }
     }
 }
