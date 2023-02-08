@@ -13,7 +13,6 @@ namespace JobPortalMud.Shared
         public string Title { get; set; } = string.Empty;
         public int NoOfPost { get; set; }
         public string Description { get; set; } = string.Empty;
-        public string Qualification { get; set; } = string.Empty;
         public string Experience { get; set; } = string.Empty;
         public string Specialization { get; set; } = string.Empty;
         public DateTime? LastDateToApply { get; set; }
@@ -35,6 +34,8 @@ namespace JobPortalMud.Shared
         public string Employer { get; set; } = string.Empty;
         public int CategoryId { get; set; }
         public string? Category { get; set; }
+        public EmploymentTypes? EmploymentTypes { get; set; }
+        public string EmploymentType { get; set; } = string.Empty;
         public long DateDiffMin { get; set; }
     }
 }

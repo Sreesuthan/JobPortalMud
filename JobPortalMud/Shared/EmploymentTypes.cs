@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace JobPortalMud.Shared
 {
-    public class Role
+    public class EmploymentTypes
     {
-        public string UserName { get; set; } = string.Empty;
-        public string Name { get; set; } = string.Empty;
+        public int Id { get; set; }
+        public string? EmploymentType { get; set; }
     }
 }

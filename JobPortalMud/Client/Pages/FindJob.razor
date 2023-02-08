@@ -16,15 +16,22 @@
 </MudGrid>
 <br />
 <MudGrid Spacing="2" Class="mt-8 mb-10" Justify="Justify.Center">
-    <MudItem xs="5">
+    <MudItem xs="4">
         <MudTextField @bind-Value="SearchTitle" Label="What" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" HelperText="Enter Job Title" Required="true" RequiredError="Job Title is required!" Class="mt-8" />
     </MudItem>
-    <MudItem xs="5">
+    <MudItem xs="4">
         <MudTextField @bind-Value="SearchCountry" Label="Where" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.LocationOn" HelperText="Enter Country" Required="true" RequiredError="Country is required!" Class="mt-8" />
     </MudItem>
-    <MudItem xs="2">
+    <MudItem xs="2" Class="text-center">
         <MudButton OnClick="()=>SearchJob(SearchTitle, SearchCountry)" Size="Size.Large" Color="Color.Info" Variant="Variant.Filled" Class="mt-9">Find Job</MudButton>
     </MudItem>
+    <MudMenu EndIcon="@Icons.Material.Filled.KeyboardArrowDown" Label="Filter" Size="Size.Large" Color="Color.Info" Variant="Variant.Outlined" Class="mt-1">
+        <MudMenuItem Disabled><b>Job Types</b></MudMenuItem>
+        @foreach (var jobtype in jobTypes)
+        {
+            <MudMenuItem OnClick="()=>JobType(jobtype.JobType)">@jobtype.JobType</MudMenuItem>
+        }
+    </MudMenu>
 </MudGrid>
 <MudGrid Class="mt-8" Justify="Justify.Center">
         <MudItem xs="10">
@@ -57,10 +64,11 @@
                                 isNew = false;
                             }
                         }
-                        <MudText Typo="Typo.h5" Style="margin:15px"><b>@job.Title</b>&nbsp;
+                        <MudText Typo="Typo.h5" Style="margin:15px">
+                            <b>@job.Title</b> <b style="font-size: 15px;">(@job.EmploymentType)</b>&nbsp;
                             @if (isNew)
                             {
-                                <span style="font-size: 11px;" class="text-danger border border-danger rounded-1">New</span>
+                                <span style="font-size: 11px;" class="text-success border border-success rounded-1">New</span>
                             }
                         </MudText>
                              <MudText Typo="Typo.subtitle1"><MudIcon Icon="@Icons.Material.Filled.Monitor" Size="Size.Small" />&nbsp;@job.CompanyName&nbsp;&nbsp;&nbsp;<MudIcon Icon="@Icons.Material.Filled.LocationOn" Size="Size.Small" />&nbsp;@job.Address, @job.State, @job.Country&nbsp;&nbsp;&nbsp;<MudIcon Icon="@Icons.Material.Filled.Timer" Size="Size.Small" />&nbsp;@job.JobType</MudText>
@@ -99,10 +107,17 @@
 
     public List<JobPortalMud.Shared.JobList> jobs { get; set; } = new List<JobPortalMud.Shared.JobList>();
     public Paging Paging = new Paging();
+    public List<JobTypes>? jobTypes = new List<JobTypes>();
 
     protected override async Task OnInitializedAsync()
     {
         await PageChanged(currentPage);
+
+        var result1 = await Http.GetFromJsonAsync<List<JobTypes>>("api/JobList/jobtypes");
+        if (result1 != null)
+        {
+            jobTypes = result1;
+        }
     }
 
     private async Task PageChanged(int i)
@@ -147,5 +162,25 @@
     void ViewJob(int id, string user)
     {
         navigationManager.NavigateTo($"viewjob/{id}/{user}");
+    }
+
+    private async Task JobType(string jobtype)
+    {
+        if (Id != null)
+        {
+            var result = await Http.GetFromJsonAsync<List<JobPortalMud.Shared.JobList>>($"api/JobList/search/{Id}");
+            if (result != null)
+            {
+                var list = result.Where(t => t.JobType.Equals(jobtype)).ToList();
+                int pageSize = 5;
+                int count = list.Count;
+                int TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+                list = list.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+                Paging.PageSize = pageSize;
+                Paging.CurrentPage = currentPage;
+                Paging.TotalPages = TotalPages;
+                jobs = list;
+            }
+        }
     }
 }

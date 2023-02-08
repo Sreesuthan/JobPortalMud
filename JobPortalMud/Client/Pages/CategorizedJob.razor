@@ -14,9 +14,18 @@
         <MudPaper  MaxHeight="700px" MaxWidth="100%" Outlined="true">
             @foreach(var category in categories.Take(7))
             {
-                <MudList Clickable="true" Dense="true">
-                    <MudListItem Text="@category.Category" OnClick="()=>FindJob(category.Id, UserName)" Icon="@Icons.Material.Filled.Send" IconSize="Size.Small" />
-                </MudList>
+                    @if(categoryLegends.Any(cl => cl.Category.Equals(category.Category)))
+                    {
+                        <MudList Clickable="true" Dense="true">
+                            <MudListItem OnClick="()=>FindJob(category.Id, UserName)" Icon="@Icons.Material.Filled.Send" IconSize="Size.Small">@category.Category <span style="font-size: 11px;" class="text-success border border-success rounded-1">New</span></MudListItem>
+                        </MudList>
+                    }
+                    else
+                    {
+                        <MudList Clickable="true" Dense="true">
+                        <MudListItem Text="@category.Category" OnClick="()=>FindJob(category.Id, UserName)" Icon="@Icons.Material.Filled.Send" IconSize="Size.Small" />
+                        </MudList>
+                    }
             }
         </MudPaper>
     </MudItem>
@@ -24,9 +33,18 @@
         <MudPaper  MaxHeight="700px" MaxWidth="100%" Outlined="true">
             @foreach (var category in categories.Skip(7).Take(7).ToList())
             {
-                <MudList Clickable="true" Dense="true">
-                    <MudListItem Text="@category.Category" OnClick="()=>FindJob(category.Id, UserName)" Icon="@Icons.Material.Filled.Send" IconSize="Size.Small"/>
-                </MudList>
+                    @if (categoryLegends.Any(cl => cl.Category.Equals(category.Category)))
+                    {
+                        <MudList Clickable="true" Dense="true">
+                            <MudListItem OnClick="()=>FindJob(category.Id, UserName)" Icon="@Icons.Material.Filled.Send" IconSize="Size.Small">@category.Category <span style="font-size: 11px;" class="text-success border border-success rounded-1">New</span></MudListItem>
+                        </MudList>
+                    }
+                    else
+                    {
+                        <MudList Clickable="true" Dense="true">
+                            <MudListItem Text="@category.Category" OnClick="()=>FindJob(category.Id, UserName)" Icon="@Icons.Material.Filled.Send" IconSize="Size.Small" />
+                        </MudList>
+                    }
             }
         </MudPaper>
     </MudItem>
@@ -34,9 +52,18 @@
         <MudPaper MaxHeight="700px" MaxWidth="100%" Outlined="true">
             @foreach (var category in categories.TakeLast(6))
             {
-                <MudList Clickable="true" Dense="true">
-                    <MudListItem Text="@category.Category" OnClick="()=>FindJob(category.Id, UserName)" Icon="@Icons.Material.Filled.Send" IconSize="Size.Small" />
-                </MudList>
+                    @if (categoryLegends.Any(cl => cl.Category.Equals(category.Category)))
+                    {
+                        <MudList Clickable="true" Dense="true">
+                            <MudListItem OnClick="()=>FindJob(category.Id, UserName)" Icon="@Icons.Material.Filled.Send" IconSize="Size.Small">@category.Category <span style="font-size: 11px;" class="text-success border border-success rounded-1">New</span></MudListItem>
+                        </MudList>
+                    }
+                    else
+                    {
+                        <MudList Clickable="true" Dense="true">
+                            <MudListItem Text="@category.Category" OnClick="()=>FindJob(category.Id, UserName)" Icon="@Icons.Material.Filled.Send" IconSize="Size.Small" />
+                        </MudList>
+                    }
             }
         </MudPaper>
     </MudItem>
@@ -48,6 +75,7 @@
     [Parameter]
     public string? UserName { get; set; }
     public List<Categories> categories = new List<Categories>();
+    public List<Categories> categoryLegends = new List<Categories>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -55,6 +83,11 @@
         if (result != null)
         {
             categories = result;
+        }
+        var result1 = await Http.GetFromJsonAsync<List<Categories>>("api/JobList/categories/legends");
+        if (result1 != null)
+        {
+            categoryLegends = result1;
         }
     }
     void FindJob(int id, string user)

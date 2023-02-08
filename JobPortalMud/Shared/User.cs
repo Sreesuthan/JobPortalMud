@@ -10,13 +10,8 @@ namespace JobPortalMud.Shared
     {
         public int SrNo { get; set; }
         public string Name { get; set; } = string.Empty;
-        public string TenthGrade { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
         public string UserName { get; set; } = string.Empty;
-        public string TwelfththGrade { get; set; } = string.Empty;
-        public string GraduaionGrade { get; set; } = string.Empty;
-        public string PostGraduaionGrade { get; set; } = string.Empty;
-        public string PhD { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
         public string WorksOn { get; set; } = string.Empty;
         public string Experience { get; set; } = string.Empty;
         public string Resume { get; set; } = string.Empty;

@@ -38,12 +38,11 @@ namespace JobPortalMud.Client.Services.JobService
 			}
 		}
 
-        public async Task UpdateJob(JobList job, string user)
+        public async Task UpdateJob(JobList job)
         {
             var result = await _http.PutAsJsonAsync("api/JobList", job);
             var response = await result.Content.ReadFromJsonAsync<List<JobList>>();
-            jobs = response;
-            _navigationManager.NavigateTo($"joblist/{user}");
+            jobs = response;;
         }
     }
 }

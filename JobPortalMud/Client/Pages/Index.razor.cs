@@ -55,21 +55,11 @@ namespace JobPortalMud.Client.Pages
                 {
                     users = result3;
                 }
-                if (user.Contains("@gmail.com"))
+
+                var result4 = await Http.GetFromJsonAsync<Role>($"api/User/role/{user}");
+                if (result4 != null)
                 {
-                    var result4 = await Http.GetFromJsonAsync<Role>($"api/User/external/{user}");
-                    if (result4 != null)
-                    {
-                        role = result4;
-                    }
-                }
-                else
-                {
-                    var result4 = await Http.GetFromJsonAsync<Role>($"api/User/role/{user}");
-                    if (result4 != null)
-                    {
-                        role = result4;
-                    }
+                    role = result4;
                 }
             }
         }

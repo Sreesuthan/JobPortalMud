@@ -5,7 +5,7 @@
     ViewData["Title"] = "Log in";
 }
 
-<div class="container col-lg-6 mb-5">
+<div class="container col-lg-5 mb-5">
     <div class="row justify-content-center border rounded-3">
         <div class="mb-3">
             <h4 class="text-center mb-4 m-lg-3">Welcome to Entertainment Careers.Net</h4>
@@ -55,7 +55,7 @@
                          <div class="form-floating mb-3 d-grid m-lg-3">
                              @foreach (var provider in Model.ExternalLogins)
                              {
-                                 <button type="submit" class="btn px-4 btn-outline-primary" asp-page-handler="ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">SIGN IN WITH @provider.DisplayName.ToUpper() </button>
+                                <button type="submit" class="btn px-4 btn-outline-primary" asp-page-handler="ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account"><span class="bi bi-google" style="float:left;"></span>SIGN IN WITH @provider.DisplayName.ToUpper() </button>
                              }
                         </div>
                     </form>

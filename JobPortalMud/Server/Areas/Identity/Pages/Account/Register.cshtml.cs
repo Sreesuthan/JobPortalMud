@@ -44,7 +44,7 @@ namespace JobPortalMud.Server.Areas.Identity.Pages.Account
         [BindProperty]
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
-        public RegisterModel(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager,RoleManager<IdentityRole> roleManager, IConfiguration config)
+        public RegisterModel(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration config)
         {
             _userManager = userManager;
             _roleManager = roleManager;

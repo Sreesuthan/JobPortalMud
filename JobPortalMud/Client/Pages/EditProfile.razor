@@ -26,16 +26,21 @@
             <MudTextField Label="Address" @bind-Value="user.Address" Placeholder="Enter Address" For="@(()=>user.Address)"></MudTextField>
             <MudTextField Label="Mobile Number" @bind-Value="user.mobile" Placeholder="Enter Mobile Number" For="@(()=>user.mobile)"></MudTextField>
             <MudTextField Label="Email" @bind-Value="user.Email" Placeholder="Enter Email" For="@(()=>user.Email)"></MudTextField>
+            <br />
+            <MudFileUpload id="fileInput1" T="IBrowserFile" Accept=".jpg, .jpeg, .png" OnFilesChanged="OnFileChangeImg" MaximumFileCount="1" />
+            <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Material.Filled.CloudUpload" for="fileInput1">Select Profile Picture</MudButton>
+            <MudImage Src="@user.ProfileImage" Elevation="25" Class="rounded my-2"></MudImage>
+            <br />
             <MudSelect Label="Country" @bind-Value="user.Country">
                 @foreach (var country in countries)
                 {
                     <MudSelectItem Value="country.Country">@country.Country</MudSelectItem>
                 }
-                </MudSelect>
-
+            </MudSelect>
             <MudTextField Label="Achievements" @bind-Value="user.WorksOn" Placeholder="Enter Career" For="@(()=>user.WorksOn)"></MudTextField>
             <MudTextField Label="Working Experience" @bind-Value="user.Experience" Placeholder="Ex: 2 years" For="@(()=>user.Experience)"></MudTextField>
             <br />
+            <MudFileUpload id="fileInput2" T="IBrowserFile" Accept=".doc, .docx, .pdf" OnFilesChanged="OnFileChangeDoc" MaximumFileCount="1" />
             <InputFile  id="fileInput2" OnChange="OnFileChangeDoc" hidden />
             <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Material.Filled.CloudUpload" for="fileInput2">Select Resume</MudButton>
             <MudText Typo="Typo.subtitle2">@user.OriginalFileName</MudText>

@@ -7,6 +7,7 @@
 @inject IJobService JobService
 @inject HttpClient Http
 @inject MudBlazor.ISnackbar snackBar
+@inject NavigationManager navigationManager
 
 
 
@@ -25,10 +26,16 @@
     <MudCard Class="mt-8">
         <MudCardContent>
             <MudSwitch Label="Active" @bind-Checked="job.Active" Color="Color.Primary"></MudSwitch>
-            <MudTextField Label="Job Title" @bind-Value="job.Title" For="@(()=>job.Title)"></MudTextField>
+            <MudSelect Label="Job or Internship" @bind-Value="job.EmploymentType">
+                @foreach (var employmentType in employmentTypes)
+                {
+                    <MudSelectItem Value="employmentType.EmploymentType">@employmentType.EmploymentType</MudSelectItem>
+                }
+            </MudSelect>
+            <MudTextField Label="Title" @bind-Value="job.Title" For="@(()=>job.Title)"></MudTextField>
             <MudNumericField Label="No. of Post" @bind-Value="job.NoOfPost" For="@(()=>job.NoOfPost)"></MudNumericField>
-            <MudTextField Label="Job Description" @bind-Value="job.Description" Lines="4" For="@(()=>job.Description)"></MudTextField>
-            <MudSelect Label="Job Category" @bind-Value="job.CategoryId">
+            <MudTextField Label="Description" @bind-Value="job.Description" Lines="4" For="@(()=>job.Description)"></MudTextField>
+            <MudSelect Label="Category" @bind-Value="job.CategoryId">
                 @foreach (var category in categories)
                 {
                     <MudSelectItem Value="category.Id">@category.Category</MudSelectItem>
@@ -57,13 +64,13 @@
             </MudSelect>
             <br />
             <br />
-            <InputFile id="fileInput" OnChange="OnFileChange" hidden />
+            <MudFileUpload id="fileInput" T="IBrowserFile" Accept=".jpg, .jpeg, .png" OnFilesChanged="OnFileChange" MaximumFileCount="1" />
             <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Filled.CloudUpload" for="fileInput">Select Company Logo</MudButton>
             <MudImage Src="@job.CompanyImage" Elevation="25" Class="rounded my-2"></MudImage>
         </MudCardContent>
     </MudCard>
 
-    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Info" Class="mr-4 mt-4">Update Job</MudButton>
+    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Info" Class="mr-4 mt-4">@(job.EmploymentType.Contains("Internship") ? "Update Internship ":"Update Job")</MudButton>
     
 </EditForm>
 
@@ -77,7 +84,7 @@
     public List<JobTypes>? jobTypes = new List<JobTypes>();
     public List<Countries>? countries = new List<Countries>();
     public List<Categories>? categories = new List<Categories>();
-
+    public List<EmploymentTypes>? employmentTypes = new List<EmploymentTypes>();
 
 
     protected override async Task OnInitializedAsync()
@@ -97,6 +104,11 @@
         {
             categories = result3;
         }
+        var result4 = await Http.GetFromJsonAsync<List<EmploymentTypes>>("api/JobList/employmenttypes");
+        if (result4 != null)
+        {
+            employmentTypes = result4;
+        }
     }
 
 
@@ -112,8 +124,18 @@
     {
         if (job.CompanyImage.Length > 0)
         {
-            await JobService.UpdateJob(job, user);
-            snackBar.Add("Job Updated Successfully", Severity.Success);
+            if (job.EmploymentType.Contains("Internship"))
+            {
+                await JobService.UpdateJob(job);
+                navigationManager.NavigateTo($"internshiplist/{user}");
+                snackBar.Add("Internship Updated Successfully", Severity.Success);
+            }
+            else
+            {
+                await JobService.UpdateJob(job);
+                navigationManager.NavigateTo($"joblist/{user}");
+                snackBar.Add("Job Updated Successfully", Severity.Success);
+            }
         }
         else
         {

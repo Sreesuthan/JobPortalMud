@@ -50,15 +50,6 @@ namespace JobPortalMud.Server.Controllers
             return Ok(userRole);
         }
 
-        [HttpGet("external/{user}")]
-        public async Task<ActionResult<Role>> GetExternalProvider(string user)
-        {
-            using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
-            var userRole = await connection.QueryFirstAsync<Role>("select u.UserName, ul.LoginProvider from AspNetUserLogins as ul inner join AspNetUsers as u on ul.UserId = u.Id where u.UserName =@username",
-                new { username = user });
-            return Ok(userRole);
-        }
-
         [HttpPut]
         public async Task<ActionResult<List<User>>> UpdateJob(User user)
         {

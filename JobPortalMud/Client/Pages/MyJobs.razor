@@ -34,10 +34,10 @@
                              <MudImage Src="@Image" Width="100" Height="100" Alt="Image" Elevation="25" Class="rounded-lg ma-4" />
                          </MudItem>
                          <MudItem xs="6" Style="background-color:lightgray">
-                             <MudText Typo="Typo.h5" Style="margin:15px"><b>@job.Title</b></MudText>
+                        <MudText Typo="Typo.h5" Style="margin:15px"><b>@job.Title</b> <b style="font-size: 15px;">(@job.EmploymentType)</b></MudText>
                              <MudText Typo="Typo.subtitle1"><MudIcon Icon="@Icons.Material.Filled.Monitor" Size="Size.Small" />&nbsp;@job.CompanyName&nbsp;&nbsp;&nbsp;<MudIcon Icon="@Icons.Material.Filled.LocationOn" Size="Size.Small" />&nbsp;@job.Address, @job.State, @job.Country&nbsp;&nbsp;&nbsp;<MudIcon Icon="@Icons.Material.Filled.Timer" Size="Size.Small" />&nbsp;@job.JobType</MudText>
                          </MudItem>
-                         <MudItem xs="2" Class="text-center" Style="background-color:lightgray">
+                         <MudItem xs="4" Class="text-center" Style="background-color:lightgray">
                             <br />
                             <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="() => ViewUserJob(job.JobId, UserName)" Class="mr-4 mt-4" Style="align:center">View</MudButton>
                          </MudItem>

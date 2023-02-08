@@ -21,7 +21,7 @@ namespace JobPortalMud.Server.Controllers
         public async Task<ActionResult<List<BookMark>>> GetAllBookmarkedjob(string user)
         {
             using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
-            IEnumerable<BookMark> bookmarkedJobs = await connection.QueryAsync<BookMark>("Select bj.Id, j.CompanyName, bj.JobId, j.Title, bj.UserName, j.JobType, j.CompanyName, j.Address, j.country, State from BookmarkedJobs as bj inner join AspNetUsers as u on bj.UserName = u.UserName inner join jobs as j on bj.JobId = j.JobId where u.UserName=@UserName order by bj.Id desc", new { UserName = user });
+            IEnumerable<BookMark> bookmarkedJobs = await connection.QueryAsync<BookMark>("Select bj.Id, j.CompanyName, bj.JobId, j.Title, bj.UserName, j.JobType, j.CompanyName, j.Address, j.country, j.State, j.EmploymentType from BookmarkedJobs as bj inner join AspNetUsers as u on bj.UserName = u.UserName inner join jobs as j on bj.JobId = j.JobId where u.UserName=@UserName order by bj.Id desc", new { UserName = user });
             return Ok(bookmarkedJobs);
         }
 

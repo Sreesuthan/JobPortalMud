@@ -21,7 +21,7 @@ namespace JobPortalMud.Server.Controllers
         public async Task<ActionResult<List<AppliedJob>>> GetUserAllAppliedJobs(string user)
         {
             using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
-            IEnumerable<AppliedJob> appliedJobs = await connection.QueryAsync<AppliedJob>("Select aj.Id, j.CompanyName, aj.JobId, j.Title, aj.UserName, j.JobType, j.CompanyName, j.Address, j.country, State from AppliedJobs as aj inner join AspNetUsers as u on aj.UserName = u.UserName inner join jobs as j on aj.JobId = j.JobId where u.UserName=@UserName order by aj.Id desc", new { UserName = user });
+            IEnumerable<AppliedJob> appliedJobs = await connection.QueryAsync<AppliedJob>("Select aj.Id, j.CompanyName, aj.JobId, j.Title, aj.UserName, j.JobType, j.CompanyName, j.Address, j.country, j.State, j.EmploymentType from AppliedJobs as aj inner join AspNetUsers as u on aj.UserName = u.UserName inner join jobs as j on aj.JobId = j.JobId where u.UserName=@UserName order by aj.Id desc", new { UserName = user });
             return Ok(appliedJobs);
         }
 

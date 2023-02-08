@@ -22,10 +22,16 @@
     <DataAnnotationsValidator />
     <MudCard Class="mt-8">
         <MudCardContent>
-            <MudTextField Label="Job Title" @bind-Value="job.Title" For="@(()=>job.Title)"></MudTextField>
+            <MudSelect Label="Job or Internship" @bind-Value="job.EmploymentType">
+                @foreach (var employmentType in employmentTypes)
+                {
+                    <MudSelectItem Value="employmentType.EmploymentType">@employmentType.EmploymentType</MudSelectItem>
+                }
+            </MudSelect>
+            <MudTextField Label="Title" @bind-Value="job.Title" For="@(()=>job.Title)"></MudTextField>
             <MudNumericField Label="No. of Post" @bind-Value="job.NoOfPost" For="@(()=>job.NoOfPost)" HelperText="Minimum Value is 1."></MudNumericField>
-            <MudTextField Label="Job Description" @bind-Value="job.Description" Lines="4" For="@(()=>job.Description)"></MudTextField>
-            <MudSelect Label="Job Category" @bind-Value="job.CategoryId">
+            <MudTextField Label="Description" @bind-Value="job.Description" Lines="4" For="@(()=>job.Description)"></MudTextField>
+            <MudSelect Label="Category" @bind-Value="job.CategoryId">
             @foreach (var category in categories)
             {
                 <MudSelectItem Value="category.Id">@category.Category</MudSelectItem>
@@ -54,13 +60,13 @@
             </MudSelect>
             <br/>
             <br/>
-            <InputFile id="fileInput" OnChange="OnFileChange" hidden />
+            <MudFileUpload id="fileInput" T="IBrowserFile" Accept=".jpg, .jpeg, .png" OnFilesChanged="OnFileChange" MaximumFileCount="1" />
             <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Filled.CloudUpload" for="fileInput">Select Company Logo</MudButton>
             <MudImage Src="@job.CompanyImage" Elevation="25" Class="rounded my-2"></MudImage>
         </MudCardContent>
     </MudCard>
 
-    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Info" Class="mr-4 mt-4">Post Job</MudButton>
+    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Info" Class="mr-4 mt-4">Post Job/Internship</MudButton>
     
 </EditForm>
 
@@ -72,6 +78,7 @@
     public List<JobTypes>? jobTypes = new List<JobTypes>();
     public List<Countries>? countries = new List<Countries>();
     public List<Categories>? categories = new List<Categories>();
+    public List<EmploymentTypes>? employmentTypes = new List<EmploymentTypes>();
 
 
     protected override async Task OnInitializedAsync()
@@ -91,6 +98,11 @@
         {
             categories = result3;
         }
+        var result4 = await Http.GetFromJsonAsync<List<EmploymentTypes>>("api/JobList/employmenttypes");
+        if (result4 != null)
+        {
+            employmentTypes = result4;
+        }
     }
 
     async Task HandleSubmit()
@@ -101,7 +113,7 @@
             job.Active = true;
             job.Employer = UserName;
             await JobService.CreateJob(job, UserName);
-            snackBar.Add("Job Posted Successfully", Severity.Success);
+            snackBar.Add("Job/Intership Posted Successfully", Severity.Success);
         }
         else
         {

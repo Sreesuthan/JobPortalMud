@@ -24,11 +24,13 @@ namespace JobPortalMud.Server.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public LoginModel(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager)
+        public LoginModel(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _signInManager = signInManager;
             _userManager = userManager;
+            _roleManager = roleManager;
         }
         [BindProperty]
         public Login Model { get; set; }
@@ -146,7 +148,18 @@ namespace JobPortalMud.Server.Areas.Identity.Pages.Account
                             Email = info.Principal.FindFirstValue(ClaimTypes.Email)
                         };
 
-                        await _userManager.CreateAsync(user);
+                        var result = await _userManager.CreateAsync(user);
+                        if (result.Succeeded)
+                        {
+                            if (!await _roleManager.RoleExistsAsync("Job Seeker"))
+                                await _roleManager.CreateAsync(new IdentityRole("Job Seeker"));
+
+
+                            if (await _roleManager.RoleExistsAsync("Job Seeker"))
+                            {
+                                await _userManager.AddToRoleAsync(user, "Job Seeker");
+                            }
+                        }
                     }
 
                     await _userManager.AddLoginAsync(user, info);
