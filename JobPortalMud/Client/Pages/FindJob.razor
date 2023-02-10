@@ -5,6 +5,7 @@
 @attribute [Authorize]
 @inject HttpClient Http 
 @inject NavigationManager navigationManager
+@inject MudBlazor.ISnackbar snackBar
 
 <MudGrid Style="background-image: url('Images/apply.jpg');" Class="rounded-lg">
     <MudItem xs="7">
@@ -25,12 +26,19 @@
     <MudItem xs="2" Class="text-center">
         <MudButton OnClick="()=>SearchJob(SearchTitle, SearchCountry)" Size="Size.Large" Color="Color.Info" Variant="Variant.Filled" Class="mt-9">Find Job</MudButton>
     </MudItem>
-    <MudMenu EndIcon="@Icons.Material.Filled.KeyboardArrowDown" Label="Filter" Size="Size.Large" Color="Color.Info" Variant="Variant.Outlined" Class="mt-1">
+
+    <MudMenu Dense="true" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" Label="Filter" Size="Size.Large" Color="Color.Info" Variant="Variant.Outlined" Class="mt-1">
+        <MudMenuItem Disabled><b>Employment Types</b></MudMenuItem>
+        @foreach (var type in employmentTypes)
+        {
+            <MudMenuItem OnClick="()=>EmploymentType(type.EmploymentType)">@type.EmploymentType</MudMenuItem>
+        }
         <MudMenuItem Disabled><b>Job Types</b></MudMenuItem>
         @foreach (var jobtype in jobTypes)
         {
             <MudMenuItem OnClick="()=>JobType(jobtype.JobType)">@jobtype.JobType</MudMenuItem>
         }
+        <MudMenuItem OnClick="()=>ShowJob(currentPage)"><b>Reset</b></MudMenuItem>
     </MudMenu>
 </MudGrid>
 <MudGrid Class="mt-8" Justify="Justify.Center">
@@ -107,24 +115,35 @@
 
     public List<JobPortalMud.Shared.JobList> jobs { get; set; } = new List<JobPortalMud.Shared.JobList>();
     public Paging Paging = new Paging();
-    public List<JobTypes>? jobTypes = new List<JobTypes>();
+    public List<JobTypes> jobTypes = new List<JobTypes>();
+    public List<EmploymentTypes> employmentTypes = new List<EmploymentTypes>();
 
     protected override async Task OnInitializedAsync()
     {
-        await PageChanged(currentPage);
+        await ShowJob(currentPage);
 
         var result1 = await Http.GetFromJsonAsync<List<JobTypes>>("api/JobList/jobtypes");
         if (result1 != null)
         {
             jobTypes = result1;
         }
+        var result2 = await Http.GetFromJsonAsync<List<EmploymentTypes>>("api/JobList/employmenttypes");
+        if (result2 != null)
+        {
+            employmentTypes = result2;
+        }
     }
 
     private async Task PageChanged(int i)
     {
+        currentPage = i;
+        await ShowJob(currentPage);
+    }
+
+    private async Task ShowJob(int currentPage)
+    {
         if (Id != null)
         {
-            currentPage = i;
             var result = await Http.GetFromJsonAsync<List<JobPortalMud.Shared.JobList>>($"api/JobList/search/{Id}");
             if (result != null)
             {
@@ -141,21 +160,27 @@
         }
     }
 
-
     async Task SearchJob(string title, string country)
     {
-        var result = await Http.GetFromJsonAsync<List<JobPortalMud.Shared.JobList>>($"api/JobList/find/{Id}/{title}/{country}");
-        if (result != null)
+        if (SearchTitle != null && SearchCountry != null)
         {
-            var list = result;
-            int pageSize = 5;
-            int count = list.Count;
-            int TotalPages = (int)Math.Ceiling(count / (double)pageSize);
-            list = list.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
-            Paging.PageSize = pageSize;
-            Paging.CurrentPage = currentPage;
-            Paging.TotalPages = TotalPages;
-            jobs = list;
+            var result = await Http.GetFromJsonAsync<List<JobPortalMud.Shared.JobList>>($"api/JobList/find/{Id}/{title}/{country}");
+            if (result != null)
+            {
+                var list = result;
+                int pageSize = 5;
+                int count = list.Count;
+                int TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+                list = list.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+                Paging.PageSize = pageSize;
+                Paging.CurrentPage = currentPage;
+                Paging.TotalPages = TotalPages;
+                jobs = list;
+            }
+        }
+        else
+        {
+            snackBar.Add("Job Title and Country is required!", Severity.Warning);
         }
     }
 
@@ -172,6 +197,25 @@
             if (result != null)
             {
                 var list = result.Where(t => t.JobType.Equals(jobtype)).ToList();
+                int pageSize = 5;
+                int count = list.Count;
+                int TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+                list = list.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+                Paging.PageSize = pageSize;
+                Paging.CurrentPage = currentPage;
+                Paging.TotalPages = TotalPages;
+                jobs = list;
+            }
+        }
+    }
+    private async Task EmploymentType(string employmentType)
+    {
+        if (Id != null)
+        {
+            var result = await Http.GetFromJsonAsync<List<JobPortalMud.Shared.JobList>>($"api/JobList/search/{Id}");
+            if (result != null)
+            {
+                var list = result.Where(t => t.EmploymentType.Equals(employmentType)).ToList();
                 int pageSize = 5;
                 int count = list.Count;
                 int TotalPages = (int)Math.Ceiling(count / (double)pageSize);

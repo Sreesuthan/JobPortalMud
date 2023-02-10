@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Pages\PreviewJob.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Pages\PostJob.razor~RF7b3cba9.TMP" />
   </ItemGroup>
 
@@ -26,6 +30,18 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\Files\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\PreviewJob.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Pages\PreviewJob.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Pages\PreviewJob.razor" />
   </ItemGroup>
 
 </Project>

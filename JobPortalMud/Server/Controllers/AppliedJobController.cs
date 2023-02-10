@@ -29,7 +29,7 @@ namespace JobPortalMud.Server.Controllers
         public async Task<ActionResult<List<AppliedJob>>> GetAllAppliedJobs(string user)
         {
             using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
-            IEnumerable<AppliedJob> appliedJobs = await connection.QueryAsync<AppliedJob>("Select Row_Number() over(order by (select 1)) as [SrNo], aj.Id, j.CompanyName, aj.JobId, j.Employer, j.Title, u.mobile, u.Name,u.Email, aj.UserName from AppliedJobs as aj inner join AspNetUsers as u on aj.UserName = u.UserName inner join jobs as j on aj.JobId = j.JobId where j.Employer=@Employer order by aj.Id desc", new { Employer = user });
+            IEnumerable<AppliedJob> appliedJobs = await connection.QueryAsync<AppliedJob>("Select Row_Number() over(order by (select 1)) as [SrNo], aj.Id, j.CompanyName, aj.JobId, j.Employer, j.Title, j.EmploymentType, u.mobile, u.Name,u.Email, aj.UserName from AppliedJobs as aj inner join AspNetUsers as u on aj.UserName = u.UserName inner join jobs as j on aj.JobId = j.JobId where j.Employer=@Employer order by aj.Id desc", new { Employer = user });
             return Ok(appliedJobs);
         }
 

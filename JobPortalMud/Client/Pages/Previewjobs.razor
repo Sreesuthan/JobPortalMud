@@ -1,0 +1,37 @@
+﻿@page "/previewjob/{Address}/{CompanyName}/{Country}/{Description}/{Email}/{EmploymentType}/{Experience}/{JobType}/{LastDateToApply:datetime}/{NoOfPost:int}/{Salary}/{Specialization}/{State}/{Title}/{Website}"
+<h3>PreviewJob, @LastDateToApply</h3>
+
+@code {
+	[Parameter]
+	public string Address { get; set; } = string.Empty;
+	[Parameter]
+	public string CompanyImage { get; set; } = string.Empty;
+	[Parameter]
+	public string CompanyName { get; set; } = string.Empty;
+	[Parameter]
+	public string Country { get; set; } = string.Empty;
+	[Parameter]
+	public string Description { get; set; } = string.Empty;
+	[Parameter]
+	public string Email { get; set; } = string.Empty;
+	[Parameter]
+	public string EmploymentType { get; set; } = string.Empty;
+	[Parameter]
+	public string Experience { get; set; } = string.Empty;
+	[Parameter]
+	public string JobType { get; set; } = string.Empty;
+	[Parameter]
+	public DateTime LastDateToApply { get; set; }
+	[Parameter]
+	public int NoOfPost { get; set; }
+	[Parameter]
+	public string Salary { get; set; } = string.Empty;
+	[Parameter]
+	public string Specialization { get; set; } = string.Empty;
+	[Parameter]
+	public string State { get; set; } = string.Empty;
+	[Parameter]
+	public string Title { get; set; } = string.Empty;
+	[Parameter]
+	public string Website { get; set; } = string.Empty;
+}

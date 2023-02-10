@@ -28,6 +28,7 @@
         <MudTh>Mobile No.</MudTh>
         <MudTh>Email</MudTh>
         <MudTh>Job Title</MudTh>
+        <MudTh>Job/Internship</MudTh>
         <MudTh>Comapany Name</MudTh>
         <MudTh>Resume</MudTh>
         <MudTh>Action</MudTh>
@@ -38,6 +39,7 @@
             <MudTd DataLabel="Mobile No.">@context.mobile </MudTd>
             <MudTd DataLabel="Email">@context.Email</MudTd>
         <MudTd DataLabel="Job Title">@context.Title</MudTd>
+            <MudTd DataLabel="Job/Internship">@context.EmploymentType</MudTd>
             <MudTd DataLabel="Comapany Name">@context.CompanyName</MudTd>
             <MudTd DataLabel="Resume">
                 <MudIconButton OnClick="() => DownloadResume(context.Id)"

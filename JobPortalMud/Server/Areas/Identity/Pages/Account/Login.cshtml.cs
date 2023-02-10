@@ -58,41 +58,50 @@ namespace JobPortalMud.Server.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByNameAsync(Model.UserName);
-                if (await _userManager.IsEmailConfirmedAsync(user))
+                if (user != null)
                 {
-                    var identityResult = await _signInManager.PasswordSignInAsync(user, Model.Password, Model.RememberMe, false);
-                    if (identityResult.Succeeded)
+                    if (await _userManager.IsEmailConfirmedAsync(user))
                     {
-                        var userRoles = await _userManager.GetRolesAsync(user);
-                        var authClaims = new List<Claim>
+                        var identityResult = await _signInManager.PasswordSignInAsync(user, Model.Password, Model.RememberMe, false);
+                        if (identityResult.Succeeded)
+                        {
+                            var userRoles = await _userManager.GetRolesAsync(user);
+                            var authClaims = new List<Claim>
                         {
                         new Claim(ClaimTypes.Name, user.UserName),
                         };
 
-                        foreach (var userRole in userRoles)
-                        {
-                            authClaims.Add(new Claim(ClaimTypes.Role, userRole));
-                        }
-                        if (returnUrl == null || returnUrl == "/")
-                        {
-                            return LocalRedirect(returnUrl);
+                            foreach (var userRole in userRoles)
+                            {
+                                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+                            }
+                            if (returnUrl == null || returnUrl == "/")
+                            {
+                                return LocalRedirect(returnUrl);
+                            }
+                            else
+                            {
+                                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                                return Page();
+                            }
                         }
                         else
                         {
-                            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                            ModelState.AddModelError(string.Empty, "Password is Incorrect.");
                             return Page();
                         }
                     }
                     else
                     {
-                        TempData["AlertMessage"] = "Login credentials are incorrect...!";
+                        TempData["Message"] = "Email not confirmed...!";
                     }
                 }
                 else
                 {
-                    TempData["Message"] = "Email not confirmed...!";
+                    ModelState.AddModelError(string.Empty, "Username is Incorrect.");
+                    return Page();
                 }
-                }
+            }
             return Page();
         }
 

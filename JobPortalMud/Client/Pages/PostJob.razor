@@ -18,67 +18,133 @@
 </MudGrid>
 <br />
 
-<EditForm Model="job" OnValidSubmit="HandleSubmit">
-    <DataAnnotationsValidator />
-    <MudCard Class="mt-8">
-        <MudCardContent>
-            <MudSelect Label="Job or Internship" @bind-Value="job.EmploymentType">
-                @foreach (var employmentType in employmentTypes)
-                {
-                    <MudSelectItem Value="employmentType.EmploymentType">@employmentType.EmploymentType</MudSelectItem>
-                }
-            </MudSelect>
-            <MudTextField Label="Title" @bind-Value="job.Title" For="@(()=>job.Title)"></MudTextField>
-            <MudNumericField Label="No. of Post" @bind-Value="job.NoOfPost" For="@(()=>job.NoOfPost)" HelperText="Minimum Value is 1."></MudNumericField>
-            <MudTextField Label="Description" @bind-Value="job.Description" Lines="4" For="@(()=>job.Description)"></MudTextField>
-            <MudSelect Label="Category" @bind-Value="job.CategoryId">
-            @foreach (var category in categories)
-            {
-                <MudSelectItem Value="category.Id">@category.Category</MudSelectItem>
-            }
-            </MudSelect>
-            <MudTextField Label="Experience" @bind-Value="job.Experience" For="@(()=>job.Experience)"></MudTextField>
-            <MudTextField Label="Specialization Required" @bind-Value="job.Specialization" Lines="4" For="@(()=>job.Specialization)"></MudTextField>
-            <MudDatePicker Label="Last Date to Apply" @bind-Date="job.LastDateToApply"/>
-            <MudTextField Label="Salary" @bind-Value="job.Salary" For="@(()=>job.Salary)"></MudTextField>
-            <MudSelect Label="Job Type" @bind-Value="job.JobType">
-            @foreach (var jobtype in jobTypes)
-            {
-                <MudSelectItem Value="jobtype.JobType">@jobtype.JobType</MudSelectItem>
-            }
-            </MudSelect>
-            <MudTextField Label="Company Name" @bind-Value="job.CompanyName" For="@(()=>job.CompanyName)"></MudTextField>
-            <MudTextField Label="Website" @bind-Value="job.Website" For="@(()=>job.Website)"></MudTextField>
-            <MudTextField Label="Email" @bind-Value="job.Email" For="@(()=>job.Email)"></MudTextField>
-            <MudTextField Label="Location" @bind-Value="job.Address" For="@(()=>job.Address)"></MudTextField>
-            <MudTextField Label="State" @bind-Value="job.State" For="@(()=>job.State)"></MudTextField>
-            <MudSelect Label="Country" @bind-Value="job.Country">
-            @foreach (var country in countries)
-            {
-                <MudSelectItem Value="country.Country">@country.Country</MudSelectItem>
-            }
-            </MudSelect>
-            <br/>
-            <br/>
-            <MudFileUpload id="fileInput" T="IBrowserFile" Accept=".jpg, .jpeg, .png" OnFilesChanged="OnFileChange" MaximumFileCount="1" />
-            <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Filled.CloudUpload" for="fileInput">Select Company Logo</MudButton>
-            <MudImage Src="@job.CompanyImage" Elevation="25" Class="rounded my-2"></MudImage>
-        </MudCardContent>
-    </MudCard>
 
-    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Info" Class="mr-4 mt-4">Post Job/Internship</MudButton>
-    
-</EditForm>
+<MudGrid Justify="Justify.Center">
+    <MudItem xs="8">
+        <EditForm Model="job" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+            <MudCard Class="mt-8">
+        <MudCardContent>
+                    <MudText Typo="Typo.h5" Class="mb-5 border-bottom pb-2" GutterBottom="true">Job Details</MudText>
+            <MudGrid Class="mb-4">
+                        <MudItem xs="6">
+                            <MudSelect Label="Job or Internship" T="string" Variant="Variant.Outlined" @bind-Value="EmploymentType">
+                                <MudSelectItem Value="@("Job")" />
+                                <MudSelectItem Value="@("Internship")">Internship</MudSelectItem>
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs="6">
+                            @{
+                                if (EmploymentType == "Internship")
+                                {
+                                    <MudSelect Label="Paid or UnPaid" T="string" Variant="Variant.Outlined" @bind-Value="InternshipType">
+                                        <MudSelectItem Value="@("Paid Internship")" />
+                                        <MudSelectItem Value="@("Unpaid Internship")" />
+                                    </MudSelect>
+                                }
+                                else
+                                { }
+                            }
+
+                        </MudItem>
+                    <MudItem xs="6">
+                            <MudTextField Label="Title" @bind-Value="job.Title" Variant="Variant.Outlined" For="@(()=>job.Title)"></MudTextField>
+                    </MudItem>
+                    <MudItem xs="6">
+                    <MudNumericField Label="No. of Post" @bind-Value="job.NoOfPost" Variant="Variant.Outlined" For="@(()=>job.NoOfPost)"></MudNumericField>
+                        </MudItem>
+                        <MudItem xs="12">
+                    <MudTextField Label="Description" @bind-Value="job.Description" Variant="Variant.Outlined" Lines="5" For="@(()=>job.Description)"></MudTextField>
+                    </MudItem>
+                        <MudItem xs="6">
+                            <MudTextField Label="Experience" @bind-Value="job.Experience" Variant="Variant.Outlined" Lines="5" For="@(()=>job.Experience)"></MudTextField>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudTextField Label="Specialization Required" @bind-Value="job.Specialization" Variant="Variant.Outlined" Lines="5" For="@(()=>job.Specialization)"></MudTextField>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudSelect Label="Category" @bind-Value="job.CategoryId" Variant="Variant.Outlined" Placeholder="Select Job Category">
+                        @foreach (var category in categories)
+                        {
+                            <MudSelectItem Value="category.Id">@category.Category</MudSelectItem>
+                        }
+                    </MudSelect>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudSelect Label="Job Type" Variant="Variant.Outlined" @bind-Value="job.JobType">
+                                @foreach (var jobtype in jobTypes)
+                                {
+                                    <MudSelectItem Value="jobtype.JobType">@jobtype.JobType</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs="6">
+                    <MudTextField Label="Salary" @bind-Value="job.Salary" Variant="Variant.Outlined" For="@(()=>job.Salary)"></MudTextField>
+                    </MudItem>
+                    <MudItem xs="6">
+                    <MudDatePicker Label="Last Date to Apply" @bind-Date="job.LastDateToApply" Variant="Variant.Outlined" />
+                    </MudItem>
+                    </MudGrid>
+                    <MudText Typo="Typo.h5" Class="mb-5 border-bottom pb-2" GutterBottom="true">Company Details</MudText>
+                    <MudGrid>
+                    <MudItem xs="6">
+                    <MudTextField Label="Company Name" @bind-Value="job.CompanyName" Variant="Variant.Outlined" For="@(()=>job.CompanyName)"></MudTextField>
+                    </MudItem>
+                        <MudItem xs="6">
+                        </MudItem>
+                    <MudItem xs="6">
+                    <MudTextField Label="Email" @bind-Value="job.Email" Variant="Variant.Outlined" For="@(()=>job.Email)"></MudTextField>
+                    </MudItem>
+                    <MudItem xs="6">
+                        </MudItem>
+                    <MudItem xs="6">
+                    <MudTextField Label="Website" @bind-Value="job.Website" Variant="Variant.Outlined" For="@(()=>job.Website)"></MudTextField>
+                    </MudItem>
+                        <MudItem xs="6">
+                        </MudItem>
+                    <MudItem xs="4">
+                    <MudTextField Label="Location" @bind-Value="job.Address" Variant="Variant.Outlined" For="@(()=>job.Address)"></MudTextField>
+                    </MudItem>
+                    <MudItem xs="4">
+                            <MudTextField Label="State" @bind-Value="job.State" Variant="Variant.Outlined" For="@(()=>job.State)"></MudTextField>
+                    </MudItem>
+                    <MudItem xs="4">
+                            <MudSelect Label="Country" @bind-Value="job.Country" Variant="Variant.Outlined">
+                        @foreach (var country in countries)
+                        {
+                            <MudSelectItem Value="country.Country">@country.Country</MudSelectItem>
+                        }
+                    </MudSelect>
+                    </MudItem>
+                    <MudItem xs="12">
+                            <MudImage Src="@job.CompanyImage" Elevation="25" Class="rounded my-2  ml-9"></MudImage>
+                    <MudFileUpload id="fileInput" T="IBrowserFile" Accept=".jpg, .jpeg, .png" OnFilesChanged="OnFileChange" MaximumFileCount="1" />
+                    <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Material.Filled.CloudUpload" for="fileInput">Select Company Logo</MudButton>
+                    </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudItem xs="12" Class="d-flex justify-center">
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Info" Class="mb-4">Post Job/Internship</MudButton>
+                    </MudItem>
+                </MudCardActions>
+            </MudCard>
+        </EditForm>
+    </MudItem>
+</MudGrid>
+
 
 @code {
     [Parameter]
     public string? UserName { get; set; } 
 
     JobPortalMud.Shared.JobList job = new JobPortalMud.Shared.JobList();
-    public List<JobTypes>? jobTypes = new List<JobTypes>();
-    public List<Countries>? countries = new List<Countries>();
-    public List<Categories>? categories = new List<Categories>();
-    public List<EmploymentTypes>? employmentTypes = new List<EmploymentTypes>();
+    public List<JobTypes> jobTypes = new List<JobTypes>();
+    public List<Countries> countries = new List<Countries>();
+    public List<Categories> categories = new List<Categories>();
+    public List<EmploymentTypes> employmentTypes = new List<EmploymentTypes>();
+    public string EmploymentType = "";
+    public string InternshipType = "";
 
 
     protected override async Task OnInitializedAsync()
@@ -109,6 +175,21 @@
     {
         if (job.CompanyImage.Length > 0)
         {
+            if (EmploymentType == "Job")
+            {
+                job.EmploymentType = EmploymentType;
+            }
+            else
+            {
+                if (InternshipType == "Paid Internship")
+                {
+                    job.EmploymentType = InternshipType;
+                }
+                else
+                {
+                    job.EmploymentType = InternshipType;
+                }
+            }
             job.CreateDate = DateTime.Now;
             job.Active = true;
             job.Employer = UserName;

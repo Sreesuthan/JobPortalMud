@@ -16,39 +16,61 @@
     </MudItem>
 </MudGrid>
 <br />
-
+<MudGrid Justify="Justify.Center">
+                <MudItem xs="8">
 <EditForm Model="user" OnValidSubmit="HandleSubmit">
     <DataAnnotationsValidator />
     <MudCard Class="mt-8">
         <MudCardContent>
-            <h3 class="text-align:center; text-black mb-5 border-bottom pb-2">Personal Details</h3>
-            <MudTextField Label="Full Name" @bind-Value="user.Name" For="@(()=>user.Name)" Placeholder="Enter Your Full Name"></MudTextField>
-            <MudTextField Label="Address" @bind-Value="user.Address" Placeholder="Enter Address" For="@(()=>user.Address)"></MudTextField>
-            <MudTextField Label="Mobile Number" @bind-Value="user.mobile" Placeholder="Enter Mobile Number" For="@(()=>user.mobile)"></MudTextField>
-            <MudTextField Label="Email" @bind-Value="user.Email" Placeholder="Enter Email" For="@(()=>user.Email)"></MudTextField>
-            <br />
-            <MudFileUpload id="fileInput1" T="IBrowserFile" Accept=".jpg, .jpeg, .png" OnFilesChanged="OnFileChangeImg" MaximumFileCount="1" />
-            <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Material.Filled.CloudUpload" for="fileInput1">Select Profile Picture</MudButton>
-            <MudImage Src="@user.ProfileImage" Elevation="25" Class="rounded my-2"></MudImage>
-            <br />
-            <MudSelect Label="Country" @bind-Value="user.Country">
-                @foreach (var country in countries)
-                {
-                    <MudSelectItem Value="country.Country">@country.Country</MudSelectItem>
-                }
-            </MudSelect>
-            <MudTextField Label="Achievements" @bind-Value="user.WorksOn" Placeholder="Enter Career" For="@(()=>user.WorksOn)"></MudTextField>
-            <MudTextField Label="Working Experience" @bind-Value="user.Experience" Placeholder="Ex: 2 years" For="@(()=>user.Experience)"></MudTextField>
-            <br />
-            <MudFileUpload id="fileInput2" T="IBrowserFile" Accept=".doc, .docx, .pdf" OnFilesChanged="OnFileChangeDoc" MaximumFileCount="1" />
-            <InputFile  id="fileInput2" OnChange="OnFileChangeDoc" hidden />
-            <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Material.Filled.CloudUpload" for="fileInput2">Select Resume</MudButton>
-            <MudText Typo="Typo.subtitle2">@user.OriginalFileName</MudText>
-            
+                    <MudText Typo="Typo.h5" Class="mb-5 border-bottom pb-2" GutterBottom="true">Personal Details</MudText>
+            <MudGrid>
+                <MudItem xs="6">
+                    <MudTextField Label="Full Name" @bind-Value="user.Name" Variant="Variant.Outlined" For="@(()=>user.Name)" Placeholder="Enter Your Full Name"></MudTextField>
+                </MudItem>
+                <MudItem xs="6">
+                        </MudItem>
+                <MudItem xs="6">
+                    <MudTextField Label="Mobile Number" @bind-Value="user.mobile" Variant="Variant.Outlined" Placeholder="Enter Mobile Number" For="@(()=>user.mobile)"></MudTextField>
+                </MudItem>
+                <MudItem xs="6">
+                            <MudTextField Label="Email" @bind-Value="user.Email" Variant="Variant.Outlined" Placeholder="Enter Email" For="@(()=>user.Email)"></MudTextField>
+                </MudItem>
+                <MudItem xs="6">
+                            <MudTextField Label="Address" @bind-Value="user.Address" Variant="Variant.Outlined" Placeholder="Enter Address" For="@(()=>user.Address)"></MudTextField>
+                </MudItem>
+                <MudItem xs="6">
+                            <MudSelect Label="Country" @bind-Value="user.Country" Variant="Variant.Outlined">
+                     @foreach (var country in countries)
+                     {
+                         <MudSelectItem Value="country.Country">@country.Country</MudSelectItem>
+                     }
+                     </MudSelect>
+                </MudItem>
+                        <MudSpacer />
+                <MudItem xs="6">
+                     <MudTextField Label="Working Experience" @bind-Value="user.Experience" Variant="Variant.Outlined" Placeholder="Ex: 2 years" For="@(()=>user.Experience)"></MudTextField>
+                </MudItem>
+                <MudItem xs="6">
+                            <MudTextField Label="Achievements" @bind-Value="user.WorksOn" Variant="Variant.Outlined" Placeholder="Enter Career" For="@(()=>user.WorksOn)"></MudTextField>
+                </MudItem>
+                <MudItem xs="12">
+                     <MudImage Src="@user.ProfileImage" Elevation="25" Class="rounded my-2 ml-10"></MudImage>
+                     <MudFileUpload id="fileInput1" T="IBrowserFile" Accept=".jpg, .jpeg, .png" OnFilesChanged="OnFileChangeImg" MaximumFileCount="1" />
+                     <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Material.Filled.CloudUpload" for="fileInput1">Select Profile Picture</MudButton>
+                </MudItem>
+                <MudItem xs="12">
+                     <MudText Typo="Typo.subtitle2">@user.OriginalFileName</MudText>
+                     <MudFileUpload id="fileInput2" T="IBrowserFile" Accept=".doc, .docx, .pdf" OnFilesChanged="OnFileChangeDoc" MaximumFileCount="1" />
+                     <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Material.Filled.CloudUpload" for="fileInput2">Select Resume</MudButton>
+                </MudItem>
+            </MudGrid>
         </MudCardContent>
+        <MudCardActions>
+            <MudItem xs="12" Class="d-flex justify-center">
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Material.Filled.Edit" Class="mb-4">Update Profile</MudButton>
+            </MudItem>
+        </MudCardActions>
     </MudCard>
-
-    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Info" Class="mr-4 mt-4">Update Profile</MudButton>
-    
 </EditForm>
-
+    </MudItem>
+</MudGrid>
